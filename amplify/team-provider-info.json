@@ -1,0 +1,20 @@
+{
+  "testtwo": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-univa-front-testtwo-71229-authRole",
+      "UnauthRoleArn": "arn:aws:iam::094354848515:role/amplify-univa-front-testtwo-71229-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::094354848515:role/amplify-univa-front-testtwo-71229-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-univa-front-testtwo-71229-deployment",
+      "UnauthRoleName": "amplify-univa-front-testtwo-71229-unauthRole",
+      "StackName": "amplify-univa-front-testtwo-71229",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:094354848515:stack/amplify-univa-front-testtwo-71229/0d935450-4425-11eb-98b3-06db8e521b78",
+      "AmplifyAppId": "d31ozja5ughdtl"
+    },
+    "categories": {
+      "auth": {
+        "UnivaFront": {}
+      }
+    }
+  }
+}

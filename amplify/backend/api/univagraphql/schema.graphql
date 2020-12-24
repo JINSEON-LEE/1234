@@ -1,0 +1,23 @@
+type Problem @model {
+  id: ID!
+  subject: String
+  description: String
+  option1: Boolean
+  option2: Boolean
+  option3: Boolean
+  username: String
+  regist: AWSDateTime
+  deadline: AWSDateTime
+  solvername: String
+  state: String
+  image: String
+  file: S3Problem
+}
+
+type S3Problem {
+  bucket: String!
+  region: String!
+  key: String!
+  uri: String!
+}
+ 

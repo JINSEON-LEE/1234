@@ -1,0 +1,215 @@
+type Problem {
+  id: ID!
+  subject: String
+  description: String
+  option1: Boolean
+  option2: Boolean
+  option3: Boolean
+  username: String
+  regist: AWSDateTime
+  deadline: AWSDateTime
+  solvername: String
+  state: String
+  image: String
+  file: S3Problem
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type S3Problem {
+  bucket: String!
+  region: String!
+  key: String!
+  uri: String!
+}
+
+input S3ProblemInput {
+  bucket: String!
+  region: String!
+  key: String!
+  uri: String!
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelProblemConnection {
+  items: [Problem]
+  nextToken: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelProblemFilterInput {
+  id: ModelIDInput
+  subject: ModelStringInput
+  description: ModelStringInput
+  option1: ModelBooleanInput
+  option2: ModelBooleanInput
+  option3: ModelBooleanInput
+  username: ModelStringInput
+  regist: ModelStringInput
+  deadline: ModelStringInput
+  solvername: ModelStringInput
+  state: ModelStringInput
+  image: ModelStringInput
+  and: [ModelProblemFilterInput]
+  or: [ModelProblemFilterInput]
+  not: ModelProblemFilterInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+type Query {
+  getProblem(id: ID!): Problem
+  listProblems(filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection
+}
+
+input CreateProblemInput {
+  id: ID
+  subject: String
+  description: String
+  option1: Boolean
+  option2: Boolean
+  option3: Boolean
+  username: String
+  regist: AWSDateTime
+  deadline: AWSDateTime
+  solvername: String
+  state: String
+  image: String
+  file: S3ProblemInput
+}
+
+input UpdateProblemInput {
+  id: ID!
+  subject: String
+  description: String
+  option1: Boolean
+  option2: Boolean
+  option3: Boolean
+  username: String
+  regist: AWSDateTime
+  deadline: AWSDateTime
+  solvername: String
+  state: String
+  image: String
+  file: S3ProblemInput
+}
+
+input DeleteProblemInput {
+  id: ID
+}
+
+type Mutation {
+  createProblem(input: CreateProblemInput!, condition: ModelProblemConditionInput): Problem
+  updateProblem(input: UpdateProblemInput!, condition: ModelProblemConditionInput): Problem
+  deleteProblem(input: DeleteProblemInput!, condition: ModelProblemConditionInput): Problem
+}
+
+input ModelProblemConditionInput {
+  subject: ModelStringInput
+  description: ModelStringInput
+  option1: ModelBooleanInput
+  option2: ModelBooleanInput
+  option3: ModelBooleanInput
+  username: ModelStringInput
+  regist: ModelStringInput
+  deadline: ModelStringInput
+  solvername: ModelStringInput
+  state: ModelStringInput
+  image: ModelStringInput
+  and: [ModelProblemConditionInput]
+  or: [ModelProblemConditionInput]
+  not: ModelProblemConditionInput
+}
+
+type Subscription {
+  onCreateProblem: Problem @aws_subscribe(mutations: ["createProblem"])
+  onUpdateProblem: Problem @aws_subscribe(mutations: ["updateProblem"])
+  onDeleteProblem: Problem @aws_subscribe(mutations: ["deleteProblem"])
+}
