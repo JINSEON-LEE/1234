@@ -1,16 +1,19 @@
 type Problem {
   id: ID!
-  subject: String
+  subject: String!
   description: String
-  option1: Boolean
-  option2: Boolean
-  option3: Boolean
-  username: String
-  regist: AWSDateTime
-  deadline: AWSDateTime
+  option1: Boolean!
+  option2: Boolean!
+  option3: Boolean!
+  username: String!
+  deadline: AWSDateTime!
   solvername: String
   state: String
+  pay: String
+  rating: Int
+  review: String
   image: String
+  solveimage: String
   file: S3Problem
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
@@ -121,11 +124,14 @@ input ModelProblemFilterInput {
   option2: ModelBooleanInput
   option3: ModelBooleanInput
   username: ModelStringInput
-  regist: ModelStringInput
   deadline: ModelStringInput
   solvername: ModelStringInput
   state: ModelStringInput
+  pay: ModelStringInput
+  rating: ModelIntInput
+  review: ModelStringInput
   image: ModelStringInput
+  solveimage: ModelStringInput
   and: [ModelProblemFilterInput]
   or: [ModelProblemFilterInput]
   not: ModelProblemFilterInput
@@ -151,17 +157,20 @@ type Query {
 
 input CreateProblemInput {
   id: ID
-  subject: String
+  subject: String!
   description: String
-  option1: Boolean
-  option2: Boolean
-  option3: Boolean
-  username: String
-  regist: AWSDateTime
-  deadline: AWSDateTime
+  option1: Boolean!
+  option2: Boolean!
+  option3: Boolean!
+  username: String!
+  deadline: AWSDateTime!
   solvername: String
   state: String
+  pay: String
+  rating: Int
+  review: String
   image: String
+  solveimage: String
   file: S3ProblemInput
 }
 
@@ -173,11 +182,14 @@ input UpdateProblemInput {
   option2: Boolean
   option3: Boolean
   username: String
-  regist: AWSDateTime
   deadline: AWSDateTime
   solvername: String
   state: String
+  pay: String
+  rating: Int
+  review: String
   image: String
+  solveimage: String
   file: S3ProblemInput
 }
 
@@ -198,11 +210,14 @@ input ModelProblemConditionInput {
   option2: ModelBooleanInput
   option3: ModelBooleanInput
   username: ModelStringInput
-  regist: ModelStringInput
   deadline: ModelStringInput
   solvername: ModelStringInput
   state: ModelStringInput
+  pay: ModelStringInput
+  rating: ModelIntInput
+  review: ModelStringInput
   image: ModelStringInput
+  solveimage: ModelStringInput
   and: [ModelProblemConditionInput]
   or: [ModelProblemConditionInput]
   not: ModelProblemConditionInput

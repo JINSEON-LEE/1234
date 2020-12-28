@@ -1,16 +1,19 @@
 type Problem @model {
   id: ID!
-  subject: String
+  subject: String!
   description: String
-  option1: Boolean
-  option2: Boolean
-  option3: Boolean
-  username: String
-  regist: AWSDateTime
-  deadline: AWSDateTime
+  option1: Boolean!
+  option2: Boolean!
+  option3: Boolean!
+  username: String!
+  deadline: AWSDateTime!
   solvername: String
   state: String
+  pay: String
+  rating: Int
+  review: String
   image: String
+  solveimage: String
   file: S3Problem
 }
 

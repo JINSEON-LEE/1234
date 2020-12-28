@@ -1,8 +1,7 @@
 {
-    "CreateAPIKey": 1,
     "AppSyncApiName": "univagraphql",
     "DynamoDBBillingMode": "PAY_PER_REQUEST",
     "DynamoDBEnableServerSideEncryption": false,
     "S3DeploymentBucket": "amplify-univa-front-testtwo-71229-deployment",
-    "S3DeploymentRootKey": "amplify-appsync-files/0cf46eb2cb2cc72ceb67f137f4dcd31bb30fbfe1"
+    "S3DeploymentRootKey": "amplify-appsync-files/e7116bd6698010a7e34b190c56525ce8938d4755"
 }

@@ -27,11 +27,12 @@
         "IdentityPoolName": "testAuthIdentityPool__testtwo",
         "UserPoolName": "UnivaFront"
       },
-      "lastPushTimeStamp": "2020-12-24T07:17:32.908Z",
+      "lastPushTimeStamp": "2020-12-28T07:33:56.417Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/auth/UnivaFront-cloudformation-template.yml",
         "logicalId": "authUnivaFront"
-      }
+      },
+      "lastPushDirHash": "Liyg5fiqBrzg6VTK+72DXFexRgE="
     }
   },
   "function": {
@@ -39,17 +40,21 @@
       "service": "Lambda",
       "providerPlugin": "awscloudformation",
       "build": true,
+      "lastBuildTimeStamp": "2020-12-28T07:11:10.078Z",
+      "lastPackageTimeStamp": "2020-12-28T07:11:10.175Z",
+      "distZipFilename": "S3Triggere26809e1-4645767452626a397030-build.zip",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/function/S3Triggere26809e1-cloudformation-template.json",
+        "logicalId": "functionS3Triggere26809e1"
+      },
+      "lastPushTimeStamp": "2020-12-28T07:33:56.434Z",
       "output": {
         "Region": "ap-northeast-2",
         "Arn": "arn:aws:lambda:ap-northeast-2:094354848515:function:S3Triggere26809e1-testtwo",
         "Name": "S3Triggere26809e1-testtwo",
         "LambdaExecutionRole": "S3Triggere26809e1LambdaRolee26809e1-testtwo"
       },
-      "lastPushTimeStamp": "2020-12-24T07:17:32.922Z",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/function/S3Triggere26809e1-cloudformation-template.json",
-        "logicalId": "functionS3Triggere26809e1"
-      }
+      "lastPushDirHash": "3Inc1Cydxx2/WtD79I6VRu1tSX4="
     }
   },
   "storage": {
@@ -67,15 +72,16 @@
           ]
         }
       ],
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+        "logicalId": "storages3af9831ad"
+      },
+      "lastPushTimeStamp": "2020-12-28T07:33:56.451Z",
       "output": {
         "BucketName": "univa-frontddea0ec3db934773902f35abcf4195d2testtwo-testtwo",
         "Region": "ap-northeast-2"
       },
-      "lastPushTimeStamp": "2020-12-24T07:17:32.939Z",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
-        "logicalId": "storages3af9831ad"
-      }
+      "lastPushDirHash": "698yKblPHWNBsB3M6viaB518yf4="
     }
   },
   "api": {
@@ -97,11 +103,12 @@
         "GraphQLAPIEndpointOutput": "https://gw5v7cbnfjevjlqxdxy2dh7zsm.appsync-api.ap-northeast-2.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-g4chexjytvhpjlgqvuamaebzcy"
       },
-      "lastPushTimeStamp": "2020-12-24T07:17:32.958Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiunivagraphql"
-      }
+      },
+      "lastPushTimeStamp": "2020-12-28T07:33:56.464Z",
+      "lastPushDirHash": "RDX+/xdYvXjrHfi6CYW/vxSMF8g="
     }
   }
 }

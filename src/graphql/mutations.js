@@ -14,11 +14,14 @@ export const createProblem = /* GraphQL */ `
       option2
       option3
       username
-      regist
       deadline
       solvername
       state
+      pay
+      rating
+      review
       image
+      solveimage
       file {
         bucket
         region
@@ -43,11 +46,14 @@ export const updateProblem = /* GraphQL */ `
       option2
       option3
       username
-      regist
       deadline
       solvername
       state
+      pay
+      rating
+      review
       image
+      solveimage
       file {
         bucket
         region
@@ -72,11 +78,14 @@ export const deleteProblem = /* GraphQL */ `
       option2
       option3
       username
-      regist
       deadline
       solvername
       state
+      pay
+      rating
+      review
       image
+      solveimage
       file {
         bucket
         region

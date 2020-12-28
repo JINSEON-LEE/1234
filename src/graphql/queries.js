@@ -11,11 +11,14 @@ export const getProblem = /* GraphQL */ `
       option2
       option3
       username
-      regist
       deadline
       solvername
       state
+      pay
+      rating
+      review
       image
+      solveimage
       file {
         bucket
         region
@@ -42,11 +45,14 @@ export const listProblems = /* GraphQL */ `
         option2
         option3
         username
-        regist
         deadline
         solvername
         state
+        pay
+        rating
+        review
         image
+        solveimage
         createdAt
         updatedAt
       }

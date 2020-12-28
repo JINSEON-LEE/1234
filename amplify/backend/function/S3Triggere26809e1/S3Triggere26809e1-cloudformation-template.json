@@ -60,7 +60,7 @@
         "Timeout": "25",
         "Code": {
           "S3Bucket": "amplify-univa-front-testtwo-71229-deployment",
-          "S3Key": "amplify-builds/S3Triggere26809e1-797979686d3748747556-build.zip"
+          "S3Key": "amplify-builds/S3Triggere26809e1-4645767452626a397030-build.zip"
         }
       }
     },
