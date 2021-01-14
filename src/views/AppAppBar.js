@@ -8,6 +8,9 @@ import AppBarList from '../components/AppBarList';
 import Toolbar, { styles as toolbarStyles } from '../components/Toolbar';
 import logo from '../image/logo.png';
 import MenuIcon from '@material-ui/icons/Menu';
+import { useLocation, useHistory} from 'react-router-dom';
+import { Auth } from 'aws-amplify';
+
 
 const styles = (theme) => ({
   tool: {
@@ -65,8 +68,10 @@ function ListItemLink(props) {
   return <ListItem button component="a" {...props} />;
 }
 
+
 function AppAppBar(props) {
   const { classes } = props;
+  let history = useHistory();
 
   const [state, setState] = React.useState({toggle: false});
 
@@ -111,29 +116,50 @@ function AppAppBar(props) {
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/"
+            href="/review"
           >
             {'이용후기'}
           </Link>
           <div className={classes.right}>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={classes.rightLink}
-              href="/sign-in/"
-            >
-              {'로그인'}
-            </Link>
-            <Link
-              color="inherit"
-              variant="h6"
-              underline="none"
-              className={clsx(classes.rightLink)} //색깔에 접근할 때: classes.linksecondary
-              href="/sign-up/"
-            >
-              {'회원가입'}
-            </Link>
+            {console.log(props.isLogin)}
+            {props.isLogin === "signedin"
+              ? (
+                <Link
+                color="inherit"
+                variant="h6"
+                underline="none"
+                className={classes.rightLink}
+                href="/sign-out/"
+                >
+                  {'로그아웃'}
+                </Link>
+              )
+              : (
+                <div>
+                <Link
+                  color="inherit"
+                  variant="h6"
+                  underline="none"
+                  className={classes.rightLink}
+                  href="/sign-in/"
+                  path = "/"
+                >
+                  {'로그인'}
+                </Link>
+                <Link
+                  color="inherit"
+                  variant="h6"
+                  underline="none"
+                  className={clsx(classes.rightLink)} //색깔에 접근할 때: classes.linksecondary
+                  href="/sign-up/"
+                >
+                  {'회원가입'}
+                </Link>
+                </div>
+              )
+            }
+
+
             <IconButton onClick={handleDrawerToggle}>
               <MenuIcon className={[classes.right, classes.nav].join(' ')}/>
             </IconButton>
@@ -146,19 +172,19 @@ function AppAppBar(props) {
             <ListItemLink href="/FAQ/">
               <ListItemText primary='이용방법'/>
             </ListItemLink>
-            <ListItem button>
+            <ListItem button onClick = {() => {history.push('/ask');}} >
               <ListItemText primary='질문하기'/>
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick = {() => {history.push('/list');}} >
               <ListItemText primary='내 질문'/>
             </ListItem>
             <ListItem button>
               <ListItemText primary='이용후기'/>
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick = {() => {history.push('/sign-in');}} >
               <ListItemText primary='로그인'/>
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick = {() => {history.push('/sign-up');}} >
               <ListItemText primary='회원가입'/>
             </ListItem>
           </List>

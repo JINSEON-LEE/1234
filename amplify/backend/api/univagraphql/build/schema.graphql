@@ -1,36 +1,83 @@
-type Problem {
+type Order {
   id: ID!
   subject: String!
-  description: String
   option1: Boolean!
   option2: Boolean!
   option3: Boolean!
   username: String!
-  deadline: AWSDateTime!
   solvername: String
-  state: String
-  pay: String
-  rating: Int
+  deadline: AWSDateTime!
+  state: State!
+  pay: Int
+  review: Review
+  problems(filter: ModelProblemFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelProblemConnection
+  message: Message
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Review {
+  id: ID!
+  rating: Float
   review: String
-  image: String
-  solveimage: String
-  file: S3Problem
+  order: Order
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
 
-type S3Problem {
-  bucket: String!
-  region: String!
-  key: String!
-  uri: String!
+type Problem {
+  id: ID!
+  subject: Subject!
+  image: String
+  description: String
+  order: Order
+  answers(filter: ModelAnswerFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelAnswerConnection
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
 }
 
-input S3ProblemInput {
-  bucket: String!
-  region: String!
-  key: String!
-  uri: String!
+type Answer {
+  id: ID!
+  image: String
+  description: String
+  problem: Problem
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+enum State {
+  payWaiting
+  priceWaiting
+  canceledWaiting
+  canceled
+  assignWaiting
+  solveWaiting
+  solving
+  mentoring
+  finished
+}
+
+enum Subject {
+  classicalMechanics
+  electromagnetism
+  thermodynamics
+  linearAlgebra
+  calculus
+  engineeringMathematics
+  chemistry
+  organicChemistry
+}
+
+type Message {
+  id: ID!
+  channelID: ID!
+  author: String!
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 enum ModelSortDirection {
@@ -38,8 +85,8 @@ enum ModelSortDirection {
   DESC
 }
 
-type ModelProblemConnection {
-  items: [Problem]
+type ModelOrderConnection {
+  items: [Order]
   nextToken: String
 }
 
@@ -116,25 +163,26 @@ input ModelSizeInput {
   between: [Int]
 }
 
-input ModelProblemFilterInput {
+input ModelStateInput {
+  eq: State
+  ne: State
+}
+
+input ModelOrderFilterInput {
   id: ModelIDInput
   subject: ModelStringInput
-  description: ModelStringInput
   option1: ModelBooleanInput
   option2: ModelBooleanInput
   option3: ModelBooleanInput
   username: ModelStringInput
-  deadline: ModelStringInput
   solvername: ModelStringInput
-  state: ModelStringInput
-  pay: ModelStringInput
-  rating: ModelIntInput
-  review: ModelStringInput
-  image: ModelStringInput
-  solveimage: ModelStringInput
-  and: [ModelProblemFilterInput]
-  or: [ModelProblemFilterInput]
-  not: ModelProblemFilterInput
+  deadline: ModelStringInput
+  state: ModelStateInput
+  pay: ModelIntInput
+  createdAt: ModelStringInput
+  and: [ModelOrderFilterInput]
+  or: [ModelOrderFilterInput]
+  not: ModelOrderFilterInput
 }
 
 enum ModelAttributeTypes {
@@ -151,80 +199,423 @@ enum ModelAttributeTypes {
 }
 
 type Query {
+  getOrder(id: ID!): Order
+  listOrders(filter: ModelOrderFilterInput, limit: Int, nextToken: String): ModelOrderConnection
+  getReview(id: ID!): Review
+  listReviews(filter: ModelReviewFilterInput, limit: Int, nextToken: String): ModelReviewConnection
   getProblem(id: ID!): Problem
   listProblems(filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection
+  getAnswer(id: ID!): Answer
+  listAnswers(filter: ModelAnswerFilterInput, limit: Int, nextToken: String): ModelAnswerConnection
+  getMessage(id: ID!): Message
+  listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
+  RecordsByDateCreated(state: State, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelOrderFilterInput, limit: Int, nextToken: String): ModelOrderConnection
+  messagesByChannelID(channelID: ID, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
+  searchOrders(filter: SearchableOrderFilterInput, sort: SearchableOrderSortInput, limit: Int, nextToken: String, from: Int): SearchableOrderConnection
+  searchReviews(filter: SearchableReviewFilterInput, sort: SearchableReviewSortInput, limit: Int, nextToken: String, from: Int): SearchableReviewConnection
 }
 
-input CreateProblemInput {
+input CreateOrderInput {
   id: ID
   subject: String!
-  description: String
   option1: Boolean!
   option2: Boolean!
   option3: Boolean!
   username: String!
-  deadline: AWSDateTime!
   solvername: String
-  state: String
-  pay: String
-  rating: Int
-  review: String
-  image: String
-  solveimage: String
-  file: S3ProblemInput
+  deadline: AWSDateTime!
+  state: State!
+  pay: Int
+  createdAt: AWSDateTime
+  orderReviewId: ID
 }
 
-input UpdateProblemInput {
+input UpdateOrderInput {
   id: ID!
   subject: String
-  description: String
   option1: Boolean
   option2: Boolean
   option3: Boolean
   username: String
-  deadline: AWSDateTime
   solvername: String
-  state: String
-  pay: String
-  rating: Int
+  deadline: AWSDateTime
+  state: State
+  pay: Int
+  createdAt: AWSDateTime
+  orderReviewId: ID
+}
+
+input DeleteOrderInput {
+  id: ID
+}
+
+type Mutation {
+  createOrder(input: CreateOrderInput!, condition: ModelOrderConditionInput): Order
+  updateOrder(input: UpdateOrderInput!, condition: ModelOrderConditionInput): Order
+  deleteOrder(input: DeleteOrderInput!, condition: ModelOrderConditionInput): Order
+  createReview(input: CreateReviewInput!, condition: ModelReviewConditionInput): Review
+  updateReview(input: UpdateReviewInput!, condition: ModelReviewConditionInput): Review
+  deleteReview(input: DeleteReviewInput!, condition: ModelReviewConditionInput): Review
+  createProblem(input: CreateProblemInput!, condition: ModelProblemConditionInput): Problem
+  updateProblem(input: UpdateProblemInput!, condition: ModelProblemConditionInput): Problem
+  deleteProblem(input: DeleteProblemInput!, condition: ModelProblemConditionInput): Problem
+  createAnswer(input: CreateAnswerInput!, condition: ModelAnswerConditionInput): Answer
+  updateAnswer(input: UpdateAnswerInput!, condition: ModelAnswerConditionInput): Answer
+  deleteAnswer(input: DeleteAnswerInput!, condition: ModelAnswerConditionInput): Answer
+  createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message
+  updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message
+  deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message
+}
+
+input ModelOrderConditionInput {
+  subject: ModelStringInput
+  option1: ModelBooleanInput
+  option2: ModelBooleanInput
+  option3: ModelBooleanInput
+  username: ModelStringInput
+  solvername: ModelStringInput
+  deadline: ModelStringInput
+  state: ModelStateInput
+  pay: ModelIntInput
+  createdAt: ModelStringInput
+  and: [ModelOrderConditionInput]
+  or: [ModelOrderConditionInput]
+  not: ModelOrderConditionInput
+}
+
+type Subscription {
+  onCreateOrder(owner: String!): Order @aws_subscribe(mutations: ["createOrder"])
+  onUpdateOrder(owner: String!): Order @aws_subscribe(mutations: ["updateOrder"])
+  onDeleteOrder(owner: String!): Order @aws_subscribe(mutations: ["deleteOrder"])
+  onCreateReview: Review @aws_subscribe(mutations: ["createReview"])
+  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"])
+  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"])
+  onCreateProblem(owner: String!): Problem @aws_subscribe(mutations: ["createProblem"])
+  onUpdateProblem(owner: String!): Problem @aws_subscribe(mutations: ["updateProblem"])
+  onDeleteProblem(owner: String!): Problem @aws_subscribe(mutations: ["deleteProblem"])
+  onCreateAnswer(owner: String!): Answer @aws_subscribe(mutations: ["createAnswer"])
+  onUpdateAnswer(owner: String!): Answer @aws_subscribe(mutations: ["updateAnswer"])
+  onDeleteAnswer(owner: String!): Answer @aws_subscribe(mutations: ["deleteAnswer"])
+  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
+  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
+  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
+}
+
+type ModelReviewConnection {
+  items: [Review]
+  nextToken: String
+}
+
+input ModelReviewFilterInput {
+  rating: ModelFloatInput
+  review: ModelStringInput
+  and: [ModelReviewFilterInput]
+  or: [ModelReviewFilterInput]
+  not: ModelReviewFilterInput
+}
+
+input CreateReviewInput {
+  id: ID
+  rating: Float
   review: String
+  reviewOrderId: ID
+}
+
+input UpdateReviewInput {
+  rating: Float
+  review: String
+  reviewOrderId: ID
+}
+
+input DeleteReviewInput {
+  id: ID
+}
+
+input ModelReviewConditionInput {
+  rating: ModelFloatInput
+  review: ModelStringInput
+  and: [ModelReviewConditionInput]
+  or: [ModelReviewConditionInput]
+  not: ModelReviewConditionInput
+}
+
+type ModelProblemConnection {
+  items: [Problem]
+  nextToken: String
+}
+
+input ModelSubjectInput {
+  eq: Subject
+  ne: Subject
+}
+
+input ModelProblemFilterInput {
+  id: ModelIDInput
+  subject: ModelSubjectInput
+  image: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelProblemFilterInput]
+  or: [ModelProblemFilterInput]
+  not: ModelProblemFilterInput
+}
+
+input CreateProblemInput {
+  id: ID
+  subject: Subject!
   image: String
-  solveimage: String
-  file: S3ProblemInput
+  description: String
+  createdAt: AWSDateTime
+  problemOrderId: ID
+}
+
+input UpdateProblemInput {
+  id: ID!
+  subject: Subject
+  image: String
+  description: String
+  createdAt: AWSDateTime
+  problemOrderId: ID
 }
 
 input DeleteProblemInput {
   id: ID
 }
 
-type Mutation {
-  createProblem(input: CreateProblemInput!, condition: ModelProblemConditionInput): Problem
-  updateProblem(input: UpdateProblemInput!, condition: ModelProblemConditionInput): Problem
-  deleteProblem(input: DeleteProblemInput!, condition: ModelProblemConditionInput): Problem
-}
-
 input ModelProblemConditionInput {
-  subject: ModelStringInput
-  description: ModelStringInput
-  option1: ModelBooleanInput
-  option2: ModelBooleanInput
-  option3: ModelBooleanInput
-  username: ModelStringInput
-  deadline: ModelStringInput
-  solvername: ModelStringInput
-  state: ModelStringInput
-  pay: ModelStringInput
-  rating: ModelIntInput
-  review: ModelStringInput
+  subject: ModelSubjectInput
   image: ModelStringInput
-  solveimage: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
   and: [ModelProblemConditionInput]
   or: [ModelProblemConditionInput]
   not: ModelProblemConditionInput
 }
 
-type Subscription {
-  onCreateProblem: Problem @aws_subscribe(mutations: ["createProblem"])
-  onUpdateProblem: Problem @aws_subscribe(mutations: ["updateProblem"])
-  onDeleteProblem: Problem @aws_subscribe(mutations: ["deleteProblem"])
+type ModelAnswerConnection {
+  items: [Answer]
+  nextToken: String
+}
+
+input ModelAnswerFilterInput {
+  id: ModelIDInput
+  image: ModelStringInput
+  description: ModelStringInput
+  and: [ModelAnswerFilterInput]
+  or: [ModelAnswerFilterInput]
+  not: ModelAnswerFilterInput
+}
+
+input CreateAnswerInput {
+  id: ID
+  image: String
+  description: String
+  answerProblemId: ID
+}
+
+input UpdateAnswerInput {
+  id: ID!
+  image: String
+  description: String
+  answerProblemId: ID
+}
+
+input DeleteAnswerInput {
+  id: ID
+}
+
+input ModelAnswerConditionInput {
+  image: ModelStringInput
+  description: ModelStringInput
+  and: [ModelAnswerConditionInput]
+  or: [ModelAnswerConditionInput]
+  not: ModelAnswerConditionInput
+}
+
+type ModelMessageConnection {
+  items: [Message]
+  nextToken: String
+}
+
+input ModelMessageFilterInput {
+  id: ModelIDInput
+  channelID: ModelIDInput
+  author: ModelStringInput
+  body: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMessageFilterInput]
+  or: [ModelMessageFilterInput]
+  not: ModelMessageFilterInput
+}
+
+input CreateMessageInput {
+  id: ID
+  channelID: ID!
+  author: String!
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateMessageInput {
+  id: ID!
+  channelID: ID
+  author: String
+  body: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteMessageInput {
+  id: ID
+}
+
+input ModelMessageConditionInput {
+  channelID: ModelIDInput
+  author: ModelStringInput
+  body: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMessageConditionInput]
+  or: [ModelMessageConditionInput]
+  not: ModelMessageConditionInput
+}
+
+input ModelStringKeyConditionInput {
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  between: [String]
+  beginsWith: String
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableOrderFilterInput {
+  id: SearchableIDFilterInput
+  subject: SearchableStringFilterInput
+  option1: SearchableBooleanFilterInput
+  option2: SearchableBooleanFilterInput
+  option3: SearchableBooleanFilterInput
+  username: SearchableStringFilterInput
+  solvername: SearchableStringFilterInput
+  deadline: SearchableStringFilterInput
+  pay: SearchableIntFilterInput
+  createdAt: SearchableStringFilterInput
+  and: [SearchableOrderFilterInput]
+  or: [SearchableOrderFilterInput]
+  not: SearchableOrderFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableOrderSortableFields {
+  id
+  subject
+  option1
+  option2
+  option3
+  username
+  solvername
+  deadline
+  pay
+  createdAt
+}
+
+input SearchableOrderSortInput {
+  field: SearchableOrderSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableOrderConnection {
+  items: [Order]
+  nextToken: String
+  total: Int
+}
+
+input SearchableReviewFilterInput {
+  rating: SearchableFloatFilterInput
+  review: SearchableStringFilterInput
+  and: [SearchableReviewFilterInput]
+  or: [SearchableReviewFilterInput]
+  not: SearchableReviewFilterInput
+}
+
+enum SearchableReviewSortableFields {
+  rating
+  review
+}
+
+input SearchableReviewSortInput {
+  field: SearchableReviewSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableReviewConnection {
+  items: [Review]
+  nextToken: String
+  total: Int
 }

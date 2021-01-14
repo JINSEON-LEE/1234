@@ -27,12 +27,11 @@
         "IdentityPoolName": "testAuthIdentityPool__testtwo",
         "UserPoolName": "UnivaFront"
       },
-      "lastPushTimeStamp": "2020-12-28T07:13:48.199Z",
+      "lastPushTimeStamp": "2021-01-14T08:49:21.008Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/auth/UnivaFront-cloudformation-template.yml",
         "logicalId": "authUnivaFront"
-      },
-      "lastPushDirHash": "Liyg5fiqBrzg6VTK+72DXFexRgE="
+      }
     }
   },
   "function": {
@@ -40,21 +39,17 @@
       "service": "Lambda",
       "providerPlugin": "awscloudformation",
       "build": true,
-      "lastBuildTimeStamp": "2020-12-28T07:11:10.078Z",
-      "lastPackageTimeStamp": "2020-12-28T07:11:10.175Z",
-      "distZipFilename": "S3Triggere26809e1-4645767452626a397030-build.zip",
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/function/S3Triggere26809e1-cloudformation-template.json",
-        "logicalId": "functionS3Triggere26809e1"
-      },
-      "lastPushTimeStamp": "2020-12-28T07:13:48.199Z",
       "output": {
         "Region": "ap-northeast-2",
         "Arn": "arn:aws:lambda:ap-northeast-2:094354848515:function:S3Triggere26809e1-testtwo",
         "Name": "S3Triggere26809e1-testtwo",
         "LambdaExecutionRole": "S3Triggere26809e1LambdaRolee26809e1-testtwo"
       },
-      "lastPushDirHash": "3Inc1Cydxx2/WtD79I6VRu1tSX4="
+      "lastPushTimeStamp": "2021-01-14T08:49:21.017Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/function/S3Triggere26809e1-cloudformation-template.json",
+        "logicalId": "functionS3Triggere26809e1"
+      }
     }
   },
   "storage": {
@@ -72,16 +67,15 @@
           ]
         }
       ],
-      "providerMetadata": {
-        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
-        "logicalId": "storages3af9831ad"
-      },
-      "lastPushTimeStamp": "2020-12-28T07:13:48.199Z",
       "output": {
         "BucketName": "univa-frontddea0ec3db934773902f35abcf4195d2testtwo-testtwo",
         "Region": "ap-northeast-2"
       },
-      "lastPushDirHash": "698yKblPHWNBsB3M6viaB518yf4="
+      "lastPushTimeStamp": "2021-01-14T08:49:21.018Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+        "logicalId": "storages3af9831ad"
+      }
     }
   },
   "api": {
@@ -91,24 +85,22 @@
       "output": {
         "authConfig": {
           "defaultAuthentication": {
-            "authenticationType": "API_KEY",
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 365,
-              "description": ""
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authUnivaFront"
             }
           },
           "additionalAuthenticationProviders": []
         },
         "GraphQLAPIIdOutput": "cs5s2cbfr5d67fqc74huqyoore",
-        "GraphQLAPIEndpointOutput": "https://gw5v7cbnfjevjlqxdxy2dh7zsm.appsync-api.ap-northeast-2.amazonaws.com/graphql",
-        "GraphQLAPIKeyOutput": "da2-g4chexjytvhpjlgqvuamaebzcy"
+        "GraphQLAPIEndpointOutput": "https://gw5v7cbnfjevjlqxdxy2dh7zsm.appsync-api.ap-northeast-2.amazonaws.com/graphql"
       },
+      "lastPushTimeStamp": "2021-01-14T08:49:21.731Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiunivagraphql"
       },
-      "lastPushTimeStamp": "2020-12-28T07:13:48.199Z",
-      "lastPushDirHash": "RDX+/xdYvXjrHfi6CYW/vxSMF8g="
+      "lastPushDirHash": "Pt29kYhceGO7KU8hBy6S8bLAyC0="
     }
   }
 }

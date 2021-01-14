@@ -1,26 +1,79 @@
-type Problem @model {
+type Order
+  @model
+  @searchable
+  @auth(rules: [{ allow: owner }])
+  @key(name: "byDateCreated", fields: ["state", "createdAt"], queryField: "RecordsByDateCreated"){
   id: ID!
   subject: String!
-  description: String
-  option1: Boolean!
-  option2: Boolean!
-  option3: Boolean!
+  option1: Boolean! # 새로운풀이
+  option2: Boolean! # 상세풀이
+  option3: Boolean! # 영어풀이
   username: String!
-  deadline: AWSDateTime!
   solvername: String
-  state: String
-  pay: String
-  rating: Int
-  review: String
-  image: String
-  solveimage: String
-  file: S3Problem
+  deadline: AWSDateTime!
+  state: State!
+  pay: Int
+
+  review : Review @connection(name: "OrderReview")
+
+  problems: [Problem] @connection(name: "OrderProblems")
+  message: Message
+  createdAt: AWSDateTime!
 }
 
-type S3Problem {
-  bucket: String!
-  region: String!
-  key: String!
-  uri: String!
+type Review @model @searchable{
+  rating: Float
+  review: String
+  order: Order @connection(name: "OrderReview")
 }
- 
+
+type Problem @model @auth(rules: [{ allow: owner }]){
+  id: ID!
+  subject: Subject!
+  image: String
+  description: String
+  order: Order @connection(name: "OrderProblems")
+  answers: [Answer] @connection(name: "ProblemAnswers")
+  createdAt: AWSDateTime!
+}
+
+type Answer @model @auth(rules: [{ allow: owner }]){
+  id: ID!
+  image: String
+  description: String
+  problem: Problem @connection(name: "ProblemAnswers")
+}
+
+enum State {
+  payWaiting # 결제대기
+  priceWaiting #금액책정대기
+  canceledWaiting # 풀이취소대기
+  canceled # 풀이취소
+  assignWaiting # 풀이자배정대기
+  solveWaiting # 문제풀이대기
+  solving # 문제풀이중
+  mentoring # 멘토링중
+  finished # 완료
+}
+
+enum Subject {
+  classicalMechanics # 고전역학
+  electromagnetism # 전자기학
+  thermodynamics # 열역학
+  linearAlgebra # 선형대수학
+  calculus # 미적분학
+  engineeringMathematics # 공업수학
+  chemistry # 일반화학
+  organicChemistry # 유기화학
+}
+
+type Message
+  @model
+  @key(name: "byChannelID", fields: ["channelID", "createdAt"], queryField: "messagesByChannelID") {
+  id: ID!
+  channelID: ID!
+  author: String!
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
