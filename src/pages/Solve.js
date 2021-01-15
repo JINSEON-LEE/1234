@@ -35,6 +35,8 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
+import HelpIcon from "@material-ui/icons/Help";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 import ex2 from "../image/electro.png";
@@ -46,6 +48,9 @@ import AppAppBar from "../views/AppAppBar";
 import AppFooter from "../views/AppFooter";
 import SignIn from "./SignIn.js";
 import produce from "immer";
+import moment from "moment";
+
+import { createAnswer as createAnswerMutation } from "../graphql/mutations";
 
 Amplify.configure(awsconfig);
 
@@ -71,6 +76,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(2),
   },
+  popbox: {
+    fontSize: 14,
+    backgroundColor: "#F3F3F3",
+    padding: theme.spacing(2),
+  },
   searchbar: {
     padding: "2px 4px",
     display: "flex",
@@ -81,6 +91,13 @@ const useStyles = makeStyles((theme) => ({
   input: {
     marginLeft: theme.spacing(1),
     flex: 1,
+  },
+  inputbox: {
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(2),
+  },
+  plusbutton: {
+    marginBottom: theme.spacing(1.6),
   },
   iconButton: {
     padding: 10,
@@ -111,13 +128,18 @@ const StyledTableCell = withStyles((theme) => ({
 
 const Solve = () => {
   const classes = useStyles();
-
+  const initialSolutionForm = {
+    description: "",
+    image: "",
+  };
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
   const [selectedOrderIndex, setSelectedOrderIndex] = React.useState(0);
   const [selectedProblemIndex, setSelectedProblemIndex] = React.useState(0);
   const [orders, setOrders] = useState([]);
   const [problems, setProblems] = useState([]);
+  const [solutionForm, setSolutionForm] = useState([]);
+  const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
 
   const handleListItemClick = (event, index) => {
@@ -125,6 +147,17 @@ const Solve = () => {
     setSelectedOrderIndex(index);
     setSelectedProblemIndex(0);
     setProblems([]);
+    // for (var i = 0; i < orders[selectedOrderIndex].problems.items.length; i++) {
+    //   setSolutionForm(
+    //     produce(problems, (draft) => {
+    //       draft[selectedProblemIndex] = initialSolutionForm;
+    //     })
+    //   );
+    // }
+  };
+
+  const handleViewRefSol = () => {
+    setViewRefSol(!viewRefSol);
   };
 
   const handleViewSol = () => {
@@ -153,6 +186,7 @@ const Solve = () => {
 
   React.useLayoutEffect(() => {
     console.log(problems);
+    console.log(solutionForm);
   }, [problems]);
 
   async function nowAuth() {
@@ -175,9 +209,11 @@ const Solve = () => {
     console.log("fetch assigned orders");
     const username = await nowAuth().catch((err) => console.log(err));
     const FetchAssignedOrders = `query MyQuery($eq: String = "${username}") {
-      listOrders(filter: {solvername: {eq: $eq}}) {
+      listOrders(filter: {state: {eq: solveWaiting}, solvername: {eq: $eq}}) {
         items {
+          id
           deadline
+          state
           problems {
             items {
               id
@@ -210,7 +246,7 @@ const Solve = () => {
     const problem = apiData.data.getProblem;
     if (problem.image) {
       const image = await Storage.get(problem.image);
-      problem.image = image;
+      problem.image_url = image;
     }
     console.log(problem);
     setProblems(
@@ -221,13 +257,57 @@ const Solve = () => {
   }
 
   function getLastProblem() {
-    setSelectedProblemIndex(selectedProblemIndex-1)
+    setSelectedProblemIndex(selectedProblemIndex - 1);
   }
 
   function getNextProblem() {
-    setSelectedProblemIndex(selectedProblemIndex+1)
+    setSelectedProblemIndex(selectedProblemIndex + 1);
   }
 
+  /**
+   * Answer 만들고, s3에 사진 저장, order의 state를 mentoring 상태로 만들기
+   * 추후에 mentoring만도 따로 불러와야 함
+   */
+  async function createAnswer() {
+    for (var i = 0; i < solutionForm.length; i++) {
+      try {
+        const data = await API.graphql({
+          query: createAnswerMutation,
+          variables: {
+            input: {
+              image: "sol_" + problems[i].image,
+              description: solutionForm[i].description,
+              answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
+            },
+          },
+        });
+
+        try {
+          const res = await Storage.put("sol_" + problems[i].image, solutionForm[i].image) //S3 버킷에 파일 저장
+          console.log(res)
+        } catch (e) {
+          console.log('graphql error occurred. error message : ', e)
+        }
+
+        console.log("create Answer successfully", i, "번째");
+        console.log(data);
+        const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
+          updateOrder(input: {id: $id, state: mentoring}) {
+            updatedAt
+            state
+          }
+        }`;
+        try {
+          const res = await API.graphql(graphqlOperation(ChangeOrderState));
+          console.log(res);
+        } catch (e) {
+          console.log(e);
+        }
+      } catch (e) {
+        console.log("graphql error occurred. error message : ", e);
+      }
+    }
+  }
   // enum State {
   //   payWaiting # 결제대기
   //   priceWaiting #금액책정대기
@@ -341,8 +421,8 @@ const Solve = () => {
                 <br />
                 <br />
                 <br />
-                <button onClick={handleViewSol}>
-                  {viewSol === true ? (
+                <button onClick={handleViewRefSol}>
+                  {viewRefSol === true ? (
                     <span>문제보기</span>
                   ) : (
                     <span>풀이보기</span>
@@ -379,16 +459,107 @@ const Solve = () => {
                 padding: "1em 2em",
               }}
             >
-              문제 selectedOrderIndex: {selectedOrderIndex},
-              selectedProblemIndex: {selectedProblemIndex}
-              {problems[selectedProblemIndex] && (
-                <img
-                  src={problems[selectedProblemIndex].image}
-                  style={{ width: 400 }}
-                  alt="문제 사진이 없습니다."
-                />
+              {viewSol === false ? (
+                <div>
+                  <div>
+                    문제 selectedOrderIndex: {selectedOrderIndex},
+                    selectedProblemIndex: {selectedProblemIndex}
+                  </div>
+                  {problems[selectedProblemIndex] && (
+                    <img
+                      src={problems[selectedProblemIndex].image_url}
+                      style={{ width: 400 }}
+                      alt="문제 사진이 없습니다."
+                    />
+                  )}
+                  <hr />
+                  {problems[selectedProblemIndex] && (
+                    <div>{problems[selectedProblemIndex].description}</div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <div>
+                    답변 selectedOrderIndex: {selectedOrderIndex},
+                    selectedProblemIndex: {selectedProblemIndex}
+                  </div>
+                  <Container
+                    className={classes.container}
+                    style={{ padding: "10em" }}
+                  >
+                    <Grid
+                      container
+                      spacing={10}
+                      justify="center"
+                      direction="column"
+                    >
+                      <Grid item xs={5}>
+                        <input
+                          id="contained-button-file"
+                          className={classes.inputbox}
+                          type="file"
+                          onChange={(e) =>
+                            setSolutionForm(
+                              produce(solutionForm, (draft) => {
+                                draft[selectedProblemIndex].image =
+                                  e.target.files[0];
+                              })
+                            )
+                          }
+                        />
+                        <Typography
+                          variant="h4"
+                          display="inline"
+                          className={classes.inputword}
+                        >
+                          사진
+                        </Typography>
+                        <label htmlFor="contained-button-file">
+                          <IconButton
+                            className={classes.plusbutton}
+                            variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <AddCircleIcon fontSize="large" />
+                          </IconButton>
+                        </label>
+                      </Grid>
+                      <Divider orientation="horizontal" flexItem />
+                      <Grid item xs={5}>
+                        <div>
+                          <input
+                            type="text"
+                            onChange={(e) =>
+                              setSolutionForm(
+                                produce(solutionForm, (draft) => {
+                                  draft[selectedProblemIndex].description =
+                                    e.target.value;
+                                })
+                              )
+                            }
+                          />
+                        </div>
+                        <Typography
+                          variant="h4"
+                          display="inline"
+                          className={classes.inputword}
+                        >
+                          텍스트
+                        </Typography>
+                        <IconButton
+                          className={classes.plusbutton}
+                          variant="contained"
+                          color="primary"
+                          component="span"
+                        >
+                          <AddCircleIcon fontSize="large" />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  </Container>
+                </div>
               )}
-              {/* {problems[selectedProblemIndex].description} */}
             </Box>
             <React.Fragment>
               <Box
@@ -401,16 +572,25 @@ const Solve = () => {
               >
                 <Typography variant="h4" align="center">
                   <Button
-                    disabled={!orders[selectedOrderIndex].problems.items[selectedProblemIndex-1]}
+                    disabled={
+                      !orders[selectedOrderIndex].problems.items[
+                        selectedProblemIndex - 1
+                      ]
+                    }
                     variant="outlined"
                     color="black"
                     onClick={getLastProblem}
                   >
                     이전문제
                   </Button>
-                  남은시간 02:13 ____ {selectedProblemIndex+1}/{orders[selectedOrderIndex].problems.items.length}
+                  남은시간 02:13 ____ {selectedProblemIndex + 1}/
+                  {orders[selectedOrderIndex].problems.items.length}
                   <Button
-                    disabled={!orders[selectedOrderIndex].problems.items[selectedProblemIndex+1]}
+                    disabled={
+                      !orders[selectedOrderIndex].problems.items[
+                        selectedProblemIndex + 1
+                      ]
+                    }
                     variant="outlined"
                     color="black"
                     onClick={getNextProblem}
@@ -418,8 +598,12 @@ const Solve = () => {
                     다음문제
                   </Button>
                   <Grid direction="column" alignItems="center">
-                    <Button variant="outlined">풀이보기</Button>
-                    <Button variant="outlined">검토요청</Button>
+                    <Button variant="outlined" onClick={handleViewSol}>
+                      풀이보기
+                    </Button>
+                    <Button variant="outlined" onClick={createAnswer}>
+                      풀이 보내기
+                    </Button>
                   </Grid>
                 </Typography>
               </Box>
