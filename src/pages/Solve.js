@@ -45,6 +45,7 @@ import withRoot from "../withRoot";
 import AppAppBar from "../views/AppAppBar";
 import AppFooter from "../views/AppFooter";
 import SignIn from "./SignIn.js";
+import produce from "immer";
 
 Amplify.configure(awsconfig);
 
@@ -113,17 +114,17 @@ const Solve = () => {
 
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
-  const [selectedOrderIndex, setselectedOrderIndex] = React.useState(0);
-  const [selectedProblemIndex, setselectedProblemIndex] = React.useState(0);
+  const [selectedOrderIndex, setSelectedOrderIndex] = React.useState(0);
+  const [selectedProblemIndex, setSelectedProblemIndex] = React.useState(0);
   const [orders, setOrders] = useState([]);
-  const [problem, setProblem] = useState({});
+  const [problems, setProblems] = useState([]);
   const [viewSol, setViewSol] = useState(false);
 
   const handleListItemClick = (event, index) => {
-    console.log(index)
-    setselectedOrderIndex(index);
-    setselectedProblemIndex(0);
-    setProblem({})
+    console.log("현재 click한 index", index);
+    setSelectedOrderIndex(index);
+    setSelectedProblemIndex(0);
+    setProblems([]);
   };
 
   const handleViewSol = () => {
@@ -136,10 +137,10 @@ const Solve = () => {
         (data) => console.log(data) & setUser(data) & setAuthState("signedin")
       )
       .catch((err) => console.log(err));
-    onAuthUIStateChange((nextAuthState, authData) => {
-      setAuthState(nextAuthState);
-      setUser(authData);
-    });
+    // onAuthUIStateChange((nextAuthState, authData) => {
+    //   setAuthState(nextAuthState);
+    //   setUser(authData);
+    // });
   }, []);
 
   React.useLayoutEffect(() => {
@@ -147,19 +148,26 @@ const Solve = () => {
   }, [authState]);
 
   React.useLayoutEffect(() => {
-    getProblem(orders);
-  }, [selectedOrderIndex]);
+    getProblem(orders).catch((err) => console.log(err));
+  }, [selectedOrderIndex, selectedProblemIndex]);
+
+  React.useLayoutEffect(() => {
+    console.log(problems);
+  }, [problems]);
 
   async function nowAuth() {
     const nowAuth = await Auth.currentUserInfo();
-    console.log(nowAuth);
     const username = nowAuth.username;
     return username;
   }
 
   async function fetchFirst() {
-    const ordersFromAPI = await fetchOrders().catch((error) => {console.log(error)})
-    await getProblem(ordersFromAPI).catch((error) => {console.log(error)})
+    const ordersFromAPI = await fetchOrders().catch((error) => {
+      console.log(error);
+    });
+    await getProblem(ordersFromAPI).catch((error) => {
+      console.log(error);
+    });
   }
 
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
@@ -181,14 +189,17 @@ const Solve = () => {
 
     const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
-    console.log(ordersFromAPI);
+    console.log("API로 받은 orders", ordersFromAPI);
     setOrders(ordersFromAPI);
     return ordersFromAPI;
   }
 
   async function getProblem(orders) {
-    console.log(selectedOrderIndex)
-    console.log(orders[selectedOrderIndex].problems.items[selectedProblemIndex])
+    if (problems[selectedProblemIndex]) return;
+    console.log("함수에서 받은 index", selectedOrderIndex);
+    console.log(
+      orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
+    );
     const GetProblem = `query GetProblem($id: ID = "${orders[selectedOrderIndex].problems.items[selectedProblemIndex].id}") {
       getProblem(id: $id) {
         description
@@ -196,64 +207,26 @@ const Solve = () => {
       }
     }`;
     const apiData = await API.graphql(graphqlOperation(GetProblem));
-    const problem = apiData.data.getProblem
-    console.log(problem);
+    const problem = apiData.data.getProblem;
     if (problem.image) {
       const image = await Storage.get(problem.image);
       problem.image = image;
     }
-    setProblem(problem)
+    console.log(problem);
+    setProblems(
+      produce(problems, (draft) => {
+        draft[selectedProblemIndex] = problem;
+      })
+    );
   }
 
+  function getLastProblem() {
+    setSelectedProblemIndex(selectedProblemIndex-1)
+  }
 
-  // async function getNextProblem() {
-  //   if (!nextTokens[problemIndex]) return
-  //   const GetNextProblem = `query MyQuery($id: ID = "${orderId}") {
-  //     getOrder(id: $id) {
-  //       problems(limit: 1, nextToken: "${nextTokens[problemIndex]}") {
-  //         items {
-  //           createdAt
-  //           description
-  //           id
-  //           image
-  //           subject
-  //           answers {
-  //             nextToken
-  //             items {
-  //               createdAt
-  //               description
-  //               id
-  //               image
-  //               owner
-  //               updatedAt
-  //             }
-  //           }
-  //         }
-  //         nextToken
-  //       }
-  //     }
-  //   }`
-  //   const apiData = await API.graphql(graphqlOperation(GetNextProblem))
-  //   console.log(apiData)
-
-  //   const problem = apiData.data.getOrder.problems.items[0]
-  //   const nextToken = apiData.data.getOrder.problems.nextToken
-  //   if (problem.image) {
-  //     const image = await Storage.get(problem.image)
-  //     problem.image = image
-  //   }
-  //   setProblemIndex(problemIndex + 1)
-  //   setProblems([...problems, problem])
-  //   setNextTokens([...nextTokens, nextToken])
-  // }
-
-  // await Promise.all(ordersFromAPI.map(async problem => {
-  //   if (problem.image) {
-  //     const image = await Storage.get(problem.image);
-  //     problem.image = image;
-  //   }
-  //   return problem;
-  // }))
+  function getNextProblem() {
+    setSelectedProblemIndex(selectedProblemIndex+1)
+  }
 
   // enum State {
   //   payWaiting # 결제대기
@@ -268,6 +241,7 @@ const Solve = () => {
   // }
 
   if (orders.length === 0) return <div>There isn't problem.</div>;
+  if (problems.length === 0) return <div>IMAGE LOADING...</div>;
   return authState === AuthState.SignedIn && user ? (
     <div className="Solve">
       <React.Fragment>
@@ -407,14 +381,14 @@ const Solve = () => {
             >
               문제 selectedOrderIndex: {selectedOrderIndex},
               selectedProblemIndex: {selectedProblemIndex}
-              {problem.image && (
+              {problems[selectedProblemIndex] && (
                 <img
-                  src={problem.image}
+                  src={problems[selectedProblemIndex].image}
                   style={{ width: 400 }}
                   alt="문제 사진이 없습니다."
                 />
               )}
-              {problem.description}
+              {/* {problems[selectedProblemIndex].description} */}
             </Box>
             <React.Fragment>
               <Box
@@ -426,8 +400,23 @@ const Solve = () => {
                 }}
               >
                 <Typography variant="h4" align="center">
-                  <ArrowBackIosOutlinedIcon />
-                  남은시간 02:13 ____ 2/10 <ArrowForwardIosOutlinedIcon />
+                  <Button
+                    disabled={!orders[selectedOrderIndex].problems.items[selectedProblemIndex-1]}
+                    variant="outlined"
+                    color="black"
+                    onClick={getLastProblem}
+                  >
+                    이전문제
+                  </Button>
+                  남은시간 02:13 ____ {selectedProblemIndex+1}/{orders[selectedOrderIndex].problems.items.length}
+                  <Button
+                    disabled={!orders[selectedOrderIndex].problems.items[selectedProblemIndex+1]}
+                    variant="outlined"
+                    color="black"
+                    onClick={getNextProblem}
+                  >
+                    다음문제
+                  </Button>
                   <Grid direction="column" alignItems="center">
                     <Button variant="outlined">풀이보기</Button>
                     <Button variant="outlined">검토요청</Button>

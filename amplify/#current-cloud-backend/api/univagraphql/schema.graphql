@@ -22,6 +22,8 @@ type Order
 }
 
 type Review @model @searchable{
+  username: String!
+  subject: String!
   rating: Float
   review: String
   order: Order @connection(name: "OrderReview")

@@ -19,6 +19,8 @@ type Order {
 
 type Review {
   id: ID!
+  username: String!
+  subject: String!
   rating: Float
   review: String
   order: Order
@@ -307,6 +309,8 @@ type ModelReviewConnection {
 }
 
 input ModelReviewFilterInput {
+  username: ModelStringInput
+  subject: ModelStringInput
   rating: ModelFloatInput
   review: ModelStringInput
   and: [ModelReviewFilterInput]
@@ -316,12 +320,16 @@ input ModelReviewFilterInput {
 
 input CreateReviewInput {
   id: ID
+  username: String!
+  subject: String!
   rating: Float
   review: String
   reviewOrderId: ID
 }
 
 input UpdateReviewInput {
+  username: String
+  subject: String
   rating: Float
   review: String
   reviewOrderId: ID
@@ -332,6 +340,8 @@ input DeleteReviewInput {
 }
 
 input ModelReviewConditionInput {
+  username: ModelStringInput
+  subject: ModelStringInput
   rating: ModelFloatInput
   review: ModelStringInput
   and: [ModelReviewConditionInput]
@@ -597,6 +607,8 @@ type SearchableOrderConnection {
 }
 
 input SearchableReviewFilterInput {
+  username: SearchableStringFilterInput
+  subject: SearchableStringFilterInput
   rating: SearchableFloatFilterInput
   review: SearchableStringFilterInput
   and: [SearchableReviewFilterInput]
@@ -605,6 +617,8 @@ input SearchableReviewFilterInput {
 }
 
 enum SearchableReviewSortableFields {
+  username
+  subject
   rating
   review
 }
