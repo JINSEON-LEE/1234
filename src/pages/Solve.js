@@ -128,31 +128,32 @@ const StyledTableCell = withStyles((theme) => ({
 
 const Solve = () => {
   const classes = useStyles();
+
   const initialSolutionForm = {
     description: "",
     image: "",
   };
+
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
   const [selectedOrderIndex, setSelectedOrderIndex] = React.useState(0);
   const [selectedProblemIndex, setSelectedProblemIndex] = React.useState(0);
   const [orders, setOrders] = useState([]);
   const [problems, setProblems] = useState([]);
-  const [solutionForm, setSolutionForm] = useState([]);
+  const [solutionForm, setSolutionForm] = useState([initialSolutionForm]);
   const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
 
+  console.log(typeof solutionForm);
   const handleListItemClick = (event, index) => {
     console.log("현재 click한 index", index);
     setSelectedOrderIndex(index);
     setSelectedProblemIndex(0);
+    setViewSol(false);
     setProblems([]);
-    // for (var i = 0; i < orders[selectedOrderIndex].problems.items.length; i++) {
-    //   setSolutionForm(
-    //     produce(problems, (draft) => {
-    //       draft[selectedProblemIndex] = initialSolutionForm;
-    //     })
-    //   );
+    setSolutionForm([initialSolutionForm])
+    // for (let i = 0; i < orders[selectedOrderIndex].problems.items.length; i++) {
+    //   problems.push(initialSolutionForm)
     // }
   };
 
@@ -181,13 +182,12 @@ const Solve = () => {
   }, [authState]);
 
   React.useLayoutEffect(() => {
-    getProblem(orders).catch((err) => console.log(err));
-  }, [selectedOrderIndex, selectedProblemIndex]);
+    console.log(solutionForm);
+  }, [solutionForm]);
 
   React.useLayoutEffect(() => {
-    console.log(problems);
-    console.log(solutionForm);
-  }, [problems]);
+    getProblem(orders).catch((err) => console.log(err));
+  }, [selectedOrderIndex, selectedProblemIndex]);
 
   async function nowAuth() {
     const nowAuth = await Auth.currentUserInfo();
@@ -202,6 +202,9 @@ const Solve = () => {
     await getProblem(ordersFromAPI).catch((error) => {
       console.log(error);
     });
+    // for (let i = 0; i < ordersFromAPI[selectedOrderIndex].problems.items.length; i++) {
+    //   problems.push(initialSolutionForm)
+    // }
   }
 
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
@@ -232,6 +235,9 @@ const Solve = () => {
 
   async function getProblem(orders) {
     if (problems[selectedProblemIndex]) return;
+    if (!solutionForm[selectedProblemIndex]) {
+      solutionForm.push(initialSolutionForm);
+    }
     console.log("함수에서 받은 index", selectedOrderIndex);
     console.log(
       orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
@@ -283,29 +289,32 @@ const Solve = () => {
         });
 
         try {
-          const res = await Storage.put("sol_" + problems[i].image, solutionForm[i].image) //S3 버킷에 파일 저장
-          console.log(res)
+          const res = await Storage.put(
+            "sol_" + problems[i].image,
+            solutionForm[i].image
+          ); //S3 버킷에 파일 저장
+          console.log(res);
         } catch (e) {
-          console.log('graphql error occurred. error message : ', e)
+          console.log("graphql error occurred. error message : ", e);
         }
 
         console.log("create Answer successfully", i, "번째");
         console.log(data);
-        const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
-          updateOrder(input: {id: $id, state: mentoring}) {
-            updatedAt
-            state
-          }
-        }`;
-        try {
-          const res = await API.graphql(graphqlOperation(ChangeOrderState));
-          console.log(res);
-        } catch (e) {
-          console.log(e);
-        }
       } catch (e) {
         console.log("graphql error occurred. error message : ", e);
       }
+    }
+    const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
+      updateOrder(input: {id: $id, state: mentoring}) {
+        updatedAt
+        state
+      }
+    }`;
+    try {
+      const res = await API.graphql(graphqlOperation(ChangeOrderState));
+      console.log(res);
+    } catch (e) {
+      console.log(e);
     }
   }
   // enum State {
@@ -478,87 +487,97 @@ const Solve = () => {
                   )}
                 </div>
               ) : (
-                <div>
-                  <div>
-                    답변 selectedOrderIndex: {selectedOrderIndex},
-                    selectedProblemIndex: {selectedProblemIndex}
-                  </div>
-                  <Container
-                    className={classes.container}
-                    style={{ padding: "10em" }}
-                  >
-                    <Grid
-                      container
-                      spacing={10}
-                      justify="center"
-                      direction="column"
-                    >
-                      <Grid item xs={5}>
-                        <input
-                          id="contained-button-file"
-                          className={classes.inputbox}
-                          type="file"
-                          onChange={(e) =>
-                            setSolutionForm(
-                              produce(solutionForm, (draft) => {
-                                draft[selectedProblemIndex].image =
-                                  e.target.files[0];
-                              })
-                            )
-                          }
-                        />
-                        <Typography
-                          variant="h4"
-                          display="inline"
-                          className={classes.inputword}
+                solutionForm.map((sol, index) =>
+                  index === selectedProblemIndex ? (
+                    <div>
+                      <div>
+                        답변 selectedOrderIndex: {selectedOrderIndex},
+                        selectedProblemIndex: {selectedProblemIndex}
+                      </div>
+                      <Container
+                        className={classes.container}
+                        style={{ padding: "10em" }}
+                      >
+                        <Grid
+                          container
+                          spacing={10}
+                          justify="center"
+                          direction="column"
                         >
-                          사진
-                        </Typography>
-                        <label htmlFor="contained-button-file">
-                          <IconButton
-                            className={classes.plusbutton}
-                            variant="contained"
-                            color="primary"
-                            component="span"
-                          >
-                            <AddCircleIcon fontSize="large" />
-                          </IconButton>
-                        </label>
-                      </Grid>
-                      <Divider orientation="horizontal" flexItem />
-                      <Grid item xs={5}>
-                        <div>
-                          <input
-                            type="text"
-                            onChange={(e) =>
-                              setSolutionForm(
-                                produce(solutionForm, (draft) => {
-                                  draft[selectedProblemIndex].description =
-                                    e.target.value;
-                                })
-                              )
-                            }
-                          />
-                        </div>
-                        <Typography
-                          variant="h4"
-                          display="inline"
-                          className={classes.inputword}
-                        >
-                          텍스트
-                        </Typography>
-                        <IconButton
-                          className={classes.plusbutton}
-                          variant="contained"
-                          color="primary"
-                          component="span"
-                        >
-                          <AddCircleIcon fontSize="large" />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                  </Container>
-                </div>
+                          <Grid item xs={5}>
+                            {solutionForm[selectedProblemIndex] && (
+                              <div>{solutionForm[selectedProblemIndex].image.name}</div>
+                            )}
+                            <input
+                              id="contained-button-file"
+                              className={classes.inputbox}
+                              type="file"
+                              onChange={(e) =>
+                                setSolutionForm(
+                                  produce(solutionForm, (draft) => {
+                                    draft[selectedProblemIndex].image =
+                                      e.target.files[0];
+                                  })
+                                )
+                              }
+                            />
+                            <Typography
+                              variant="h4"
+                              display="inline"
+                              className={classes.inputword}
+                            >
+                              사진
+                            </Typography>
+                            <label htmlFor="contained-button-file">
+                              <IconButton
+                                className={classes.plusbutton}
+                                variant="contained"
+                                color="primary"
+                                component="span"
+                              >
+                                <AddCircleIcon fontSize="large" />
+                              </IconButton>
+                            </label>
+                          </Grid>
+                          <Divider orientation="horizontal" flexItem />
+                          <Grid item xs={5}>
+                            <div>
+                              {solutionForm[selectedProblemIndex] && (
+                                <div>{solutionForm[selectedProblemIndex].description}</div>
+                              )}
+                              <input
+                                type="text"
+                                onChange={(e) =>
+                                  setSolutionForm(
+                                    produce(solutionForm, (draft) => {
+                                      draft[selectedProblemIndex].description =
+                                        e.target.value;
+                                    })
+                                  )
+                                }
+                              />
+                            </div>
+                            <Typography
+                              variant="h4"
+                              display="inline"
+                              className={classes.inputword}
+                            >
+                              텍스트
+                            </Typography>
+                            <IconButton
+                              className={classes.plusbutton}
+                              variant="contained"
+                              color="primary"
+                              component="span"
+                            >
+                              <AddCircleIcon fontSize="large" />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      </Container>
+                    </div>
+                  ) : null
+                )
               )}
             </Box>
             <React.Fragment>
@@ -599,7 +618,11 @@ const Solve = () => {
                   </Button>
                   <Grid direction="column" alignItems="center">
                     <Button variant="outlined" onClick={handleViewSol}>
-                      풀이보기
+                      {viewSol === true ? (
+                        <span>문제보기</span>
+                      ) : (
+                        <span>풀이보기</span>
+                      )}
                     </Button>
                     <Button variant="outlined" onClick={createAnswer}>
                       풀이 보내기
