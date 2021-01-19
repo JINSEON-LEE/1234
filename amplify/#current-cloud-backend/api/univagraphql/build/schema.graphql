@@ -44,10 +44,11 @@ type Answer @aws_cognito_user_pools {
   id: ID!
   image: String
   description: String
+  client: String
+  solver: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   problem: Problem @aws_cognito_user_pools
-  owner: String
 }
 
 enum State {
@@ -73,13 +74,30 @@ enum Subject {
   organicChemistry
 }
 
-type Message {
+enum SolverState {
+  wake
+  sleep
+}
+
+type Solver @aws_cognito_user_pools {
   id: ID!
-  channelID: ID!
+  solver: String!
+  state: SolverState!
+  Orders: [String]!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Message @aws_cognito_user_pools {
+  id: ID!
+  channelID: String!
+  client: String!
+  solver: String!
   author: String!
   body: String!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+  owner: String
 }
 
 enum ModelSortDirection {
@@ -201,9 +219,6 @@ enum ModelAttributeTypes {
 }
 
 type Query {
-  getMessage(id: ID!): Message
-  listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
-  messagesByChannelID(channelID: ID, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
   listOrders(filter: ModelOrderFilterInput, limit: Int, nextToken: String): ModelOrderConnection @aws_cognito_user_pools
   getOrder(id: ID!): Order @aws_cognito_user_pools
   searchOrders(filter: SearchableOrderFilterInput, sort: SearchableOrderSortInput, limit: Int, nextToken: String, from: Int): SearchableOrderConnection @aws_cognito_user_pools
@@ -214,6 +229,12 @@ type Query {
   getProblem(id: ID!): Problem @aws_cognito_user_pools
   getAnswer(id: ID!): Answer @aws_cognito_user_pools
   listAnswers(filter: ModelAnswerFilterInput, limit: Int, nextToken: String): ModelAnswerConnection @aws_cognito_user_pools
+  getSolver(id: ID!): Solver @aws_cognito_user_pools
+  listSolvers(filter: ModelSolverFilterInput, limit: Int, nextToken: String): ModelSolverConnection @aws_cognito_user_pools
+  solverBySolverName(solver: String, state: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelSolverFilterInput, limit: Int, nextToken: String): ModelSolverConnection @aws_cognito_user_pools
+  getMessage(id: ID!): Message @aws_cognito_user_pools
+  listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
+  messagesByChannelID(channelID: String, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
 }
 
 input CreateOrderInput {
@@ -249,9 +270,6 @@ input DeleteOrderInput {
 }
 
 type Mutation {
-  createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message
-  updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message
-  deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message
   createOrder(input: CreateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
   updateOrder(input: UpdateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
   deleteOrder(input: DeleteOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
@@ -264,6 +282,12 @@ type Mutation {
   createAnswer(input: CreateAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
   updateAnswer(input: UpdateAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
   deleteAnswer(input: DeleteAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
+  createSolver(input: CreateSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  updateSolver(input: UpdateSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  deleteSolver(input: DeleteSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+  updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+  deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
 }
 
 input ModelOrderConditionInput {
@@ -276,27 +300,31 @@ input ModelOrderConditionInput {
   state: ModelStateInput
   pay: ModelIntInput
   createdAt: ModelStringInput
+  solver: ModelStringInput
   and: [ModelOrderConditionInput]
   or: [ModelOrderConditionInput]
   not: ModelOrderConditionInput
 }
 
 type Subscription {
-  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
-  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
-  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
-  onCreateOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
-  onUpdateOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
-  onDeleteOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
+  onCreateOrder(owner: String): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
+  onUpdateOrder(owner: String): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
+  onDeleteOrder(owner: String): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
   onCreateReview: Review @aws_subscribe(mutations: ["createReview"]) @aws_api_key @aws_cognito_user_pools
   onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"]) @aws_api_key @aws_cognito_user_pools
   onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"]) @aws_api_key @aws_cognito_user_pools
-  onCreateProblem(owner: String!): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
-  onUpdateProblem(owner: String!): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
-  onDeleteProblem(owner: String!): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
-  onCreateAnswer(owner: String!): Answer @aws_subscribe(mutations: ["createAnswer"]) @aws_cognito_user_pools
-  onUpdateAnswer(owner: String!): Answer @aws_subscribe(mutations: ["updateAnswer"]) @aws_cognito_user_pools
-  onDeleteAnswer(owner: String!): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
+  onCreateProblem(owner: String): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
+  onUpdateProblem(owner: String): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
+  onDeleteProblem(owner: String): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
+  onCreateAnswer(client: String): Answer @aws_subscribe(mutations: ["createAnswer"]) @aws_cognito_user_pools
+  onUpdateAnswer(client: String): Answer @aws_subscribe(mutations: ["updateAnswer"]) @aws_cognito_user_pools
+  onDeleteAnswer(client: String): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
+  onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
+  onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
+  onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
+  onCreateMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["createMessage"]) @aws_cognito_user_pools
+  onUpdateMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["updateMessage"]) @aws_cognito_user_pools
+  onDeleteMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["deleteMessage"]) @aws_cognito_user_pools
 }
 
 type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
@@ -413,6 +441,8 @@ input ModelAnswerFilterInput {
   id: ModelIDInput
   image: ModelStringInput
   description: ModelStringInput
+  client: ModelStringInput
+  solver: ModelStringInput
   and: [ModelAnswerFilterInput]
   or: [ModelAnswerFilterInput]
   not: ModelAnswerFilterInput
@@ -422,6 +452,8 @@ input CreateAnswerInput {
   id: ID
   image: String
   description: String
+  client: String
+  solver: String
   answerProblemId: ID
 }
 
@@ -429,6 +461,8 @@ input UpdateAnswerInput {
   id: ID!
   image: String
   description: String
+  client: String
+  solver: String
   answerProblemId: ID
 }
 
@@ -439,19 +473,66 @@ input DeleteAnswerInput {
 input ModelAnswerConditionInput {
   image: ModelStringInput
   description: ModelStringInput
+  solver: ModelStringInput
   and: [ModelAnswerConditionInput]
   or: [ModelAnswerConditionInput]
   not: ModelAnswerConditionInput
 }
 
-type ModelMessageConnection {
+type ModelSolverConnection @aws_cognito_user_pools {
+  items: [Solver]
+  nextToken: String
+}
+
+input ModelSolverStateInput {
+  eq: SolverState
+  ne: SolverState
+}
+
+input ModelSolverFilterInput {
+  solver: ModelStringInput
+  state: ModelSolverStateInput
+  Orders: ModelStringInput
+  and: [ModelSolverFilterInput]
+  or: [ModelSolverFilterInput]
+  not: ModelSolverFilterInput
+}
+
+input CreateSolverInput {
+  id: ID
+  solver: String!
+  state: SolverState!
+  Orders: [String]!
+}
+
+input UpdateSolverInput {
+  solver: String
+  state: SolverState
+  Orders: [String]
+}
+
+input DeleteSolverInput {
+  id: ID
+}
+
+input ModelSolverConditionInput {
+  state: ModelSolverStateInput
+  Orders: ModelStringInput
+  and: [ModelSolverConditionInput]
+  or: [ModelSolverConditionInput]
+  not: ModelSolverConditionInput
+}
+
+type ModelMessageConnection @aws_cognito_user_pools {
   items: [Message]
   nextToken: String
 }
 
 input ModelMessageFilterInput {
   id: ModelIDInput
-  channelID: ModelIDInput
+  channelID: ModelStringInput
+  client: ModelStringInput
+  solver: ModelStringInput
   author: ModelStringInput
   body: ModelStringInput
   createdAt: ModelStringInput
@@ -463,7 +544,9 @@ input ModelMessageFilterInput {
 
 input CreateMessageInput {
   id: ID
-  channelID: ID!
+  channelID: String!
+  client: String!
+  solver: String!
   author: String!
   body: String!
   createdAt: AWSDateTime
@@ -472,7 +555,9 @@ input CreateMessageInput {
 
 input UpdateMessageInput {
   id: ID!
-  channelID: ID
+  channelID: String
+  client: String
+  solver: String
   author: String
   body: String
   createdAt: AWSDateTime
@@ -484,7 +569,7 @@ input DeleteMessageInput {
 }
 
 input ModelMessageConditionInput {
-  channelID: ModelIDInput
+  channelID: ModelStringInput
   author: ModelStringInput
   body: ModelStringInput
   createdAt: ModelStringInput

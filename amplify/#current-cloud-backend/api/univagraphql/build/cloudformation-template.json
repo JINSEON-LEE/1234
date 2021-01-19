@@ -220,7 +220,7 @@
                         {
                             "Ref": "APIKeyExpirationEpoch"
                         },
-                        1642574575
+                        1642610566
                     ]
                 }
             },
@@ -671,6 +671,108 @@
                 "NoneDataSource"
             ]
         },
+        "Solver": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "Parameters": {
+                    "AppSyncApiId": {
+                        "Fn::GetAtt": [
+                            "GraphQLAPI",
+                            "ApiId"
+                        ]
+                    },
+                    "DynamoDBModelTableReadIOPS": {
+                        "Ref": "DynamoDBModelTableReadIOPS"
+                    },
+                    "DynamoDBModelTableWriteIOPS": {
+                        "Ref": "DynamoDBModelTableWriteIOPS"
+                    },
+                    "DynamoDBBillingMode": {
+                        "Ref": "DynamoDBBillingMode"
+                    },
+                    "DynamoDBEnablePointInTimeRecovery": {
+                        "Ref": "DynamoDBEnablePointInTimeRecovery"
+                    },
+                    "DynamoDBEnableServerSideEncryption": {
+                        "Ref": "DynamoDBEnableServerSideEncryption"
+                    },
+                    "ElasticSearchAccessIAMRoleName": {
+                        "Ref": "ElasticSearchAccessIAMRoleName"
+                    },
+                    "ElasticSearchStreamingLambdaHandlerName": {
+                        "Ref": "ElasticSearchStreamingLambdaHandlerName"
+                    },
+                    "ElasticSearchStreamingLambdaRuntime": {
+                        "Ref": "ElasticSearchStreamingLambdaRuntime"
+                    },
+                    "ElasticSearchStreamingFunctionName": {
+                        "Ref": "ElasticSearchStreamingFunctionName"
+                    },
+                    "ElasticSearchStreamingIAMRoleName": {
+                        "Ref": "ElasticSearchStreamingIAMRoleName"
+                    },
+                    "ElasticSearchDebugStreamingLambda": {
+                        "Ref": "ElasticSearchDebugStreamingLambda"
+                    },
+                    "ElasticSearchInstanceCount": {
+                        "Ref": "ElasticSearchInstanceCount"
+                    },
+                    "ElasticSearchInstanceType": {
+                        "Ref": "ElasticSearchInstanceType"
+                    },
+                    "ElasticSearchEBSVolumeGB": {
+                        "Ref": "ElasticSearchEBSVolumeGB"
+                    },
+                    "AppSyncApiName": {
+                        "Ref": "AppSyncApiName"
+                    },
+                    "APIKeyExpirationEpoch": {
+                        "Ref": "APIKeyExpirationEpoch"
+                    },
+                    "CreateAPIKey": {
+                        "Ref": "CreateAPIKey"
+                    },
+                    "AuthCognitoUserPoolId": {
+                        "Ref": "AuthCognitoUserPoolId"
+                    },
+                    "env": {
+                        "Ref": "env"
+                    },
+                    "S3DeploymentBucket": {
+                        "Ref": "S3DeploymentBucket"
+                    },
+                    "S3DeploymentRootKey": {
+                        "Ref": "S3DeploymentRootKey"
+                    },
+                    "GetAttGraphQLAPIApiId": {
+                        "Fn::GetAtt": [
+                            "GraphQLAPI",
+                            "ApiId"
+                        ]
+                    }
+                },
+                "TemplateURL": {
+                    "Fn::Join": [
+                        "/",
+                        [
+                            "https://s3.amazonaws.com",
+                            {
+                                "Ref": "S3DeploymentBucket"
+                            },
+                            {
+                                "Ref": "S3DeploymentRootKey"
+                            },
+                            "stacks",
+                            "Solver.json"
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": [
+                "GraphQLSchema",
+                "NoneDataSource"
+            ]
+        },
         "Message": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
@@ -1029,6 +1131,7 @@
                 "Review",
                 "Problem",
                 "Answer",
+                "Solver",
                 "Message",
                 "ConnectionStack",
                 "SearchableStack"

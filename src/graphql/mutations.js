@@ -13,33 +13,27 @@ export const createOrder = /* GraphQL */ `
       option2
       option3
       username
-      solvername
       deadline
       state
       pay
-      review {
-        id
-        username
-        subject
-        rating
-        review
-        createdAt
-        updatedAt
-      }
-      problems {
-        nextToken
-      }
       message {
         id
         channelID
+        client
+        solver
         author
         body
         createdAt
         updatedAt
+        owner
       }
       createdAt
+      solver
       updatedAt
       owner
+      problems {
+        nextToken
+      }
     }
   }
 `;
@@ -55,33 +49,27 @@ export const updateOrder = /* GraphQL */ `
       option2
       option3
       username
-      solvername
       deadline
       state
       pay
-      review {
-        id
-        username
-        subject
-        rating
-        review
-        createdAt
-        updatedAt
-      }
-      problems {
-        nextToken
-      }
       message {
         id
         channelID
+        client
+        solver
         author
         body
         createdAt
         updatedAt
+        owner
       }
       createdAt
+      solver
       updatedAt
       owner
+      problems {
+        nextToken
+      }
     }
   }
 `;
@@ -97,33 +85,27 @@ export const deleteOrder = /* GraphQL */ `
       option2
       option3
       username
-      solvername
       deadline
       state
       pay
-      review {
-        id
-        username
-        subject
-        rating
-        review
-        createdAt
-        updatedAt
-      }
-      problems {
-        nextToken
-      }
       message {
         id
         channelID
+        client
+        solver
         author
         body
         createdAt
         updatedAt
+        owner
       }
       createdAt
+      solver
       updatedAt
       owner
+      problems {
+        nextToken
+      }
     }
   }
 `;
@@ -138,23 +120,10 @@ export const createReview = /* GraphQL */ `
       subject
       rating
       review
-      order {
-        id
-        subject
-        option1
-        option2
-        option3
-        username
-        solvername
-        deadline
-        state
-        pay
-        createdAt
-        updatedAt
-        owner
-      }
+      order
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -169,23 +138,10 @@ export const updateReview = /* GraphQL */ `
       subject
       rating
       review
-      order {
-        id
-        subject
-        option1
-        option2
-        option3
-        username
-        solvername
-        deadline
-        state
-        pay
-        createdAt
-        updatedAt
-        owner
-      }
+      order
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -200,23 +156,10 @@ export const deleteReview = /* GraphQL */ `
       subject
       rating
       review
-      order {
-        id
-        subject
-        option1
-        option2
-        option3
-        username
-        solvername
-        deadline
-        state
-        pay
-        createdAt
-        updatedAt
-        owner
-      }
+      order
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -230,6 +173,8 @@ export const createProblem = /* GraphQL */ `
       subject
       image
       description
+      createdAt
+      updatedAt
       order {
         id
         subject
@@ -237,20 +182,18 @@ export const createProblem = /* GraphQL */ `
         option2
         option3
         username
-        solvername
         deadline
         state
         pay
         createdAt
+        solver
         updatedAt
         owner
       }
+      owner
       answers {
         nextToken
       }
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;
@@ -264,6 +207,8 @@ export const updateProblem = /* GraphQL */ `
       subject
       image
       description
+      createdAt
+      updatedAt
       order {
         id
         subject
@@ -271,20 +216,18 @@ export const updateProblem = /* GraphQL */ `
         option2
         option3
         username
-        solvername
         deadline
         state
         pay
         createdAt
+        solver
         updatedAt
         owner
       }
+      owner
       answers {
         nextToken
       }
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;
@@ -298,6 +241,8 @@ export const deleteProblem = /* GraphQL */ `
       subject
       image
       description
+      createdAt
+      updatedAt
       order {
         id
         subject
@@ -305,20 +250,18 @@ export const deleteProblem = /* GraphQL */ `
         option2
         option3
         username
-        solvername
         deadline
         state
         pay
         createdAt
+        solver
         updatedAt
         owner
       }
+      owner
       answers {
         nextToken
       }
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;
@@ -331,6 +274,10 @@ export const createAnswer = /* GraphQL */ `
       id
       image
       description
+      client
+      solver
+      createdAt
+      updatedAt
       problem {
         id
         subject
@@ -340,9 +287,6 @@ export const createAnswer = /* GraphQL */ `
         updatedAt
         owner
       }
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;
@@ -355,6 +299,10 @@ export const updateAnswer = /* GraphQL */ `
       id
       image
       description
+      client
+      solver
+      createdAt
+      updatedAt
       problem {
         id
         subject
@@ -364,9 +312,6 @@ export const updateAnswer = /* GraphQL */ `
         updatedAt
         owner
       }
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;
@@ -379,6 +324,10 @@ export const deleteAnswer = /* GraphQL */ `
       id
       image
       description
+      client
+      solver
+      createdAt
+      updatedAt
       problem {
         id
         subject
@@ -388,9 +337,51 @@ export const deleteAnswer = /* GraphQL */ `
         updatedAt
         owner
       }
+    }
+  }
+`;
+export const createSolver = /* GraphQL */ `
+  mutation CreateSolver(
+    $input: CreateSolverInput!
+    $condition: ModelSolverConditionInput
+  ) {
+    createSolver(input: $input, condition: $condition) {
+      id
+      solver
+      state
+      Orders
       createdAt
       updatedAt
-      owner
+    }
+  }
+`;
+export const updateSolver = /* GraphQL */ `
+  mutation UpdateSolver(
+    $input: UpdateSolverInput!
+    $condition: ModelSolverConditionInput
+  ) {
+    updateSolver(input: $input, condition: $condition) {
+      id
+      solver
+      state
+      Orders
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteSolver = /* GraphQL */ `
+  mutation DeleteSolver(
+    $input: DeleteSolverInput!
+    $condition: ModelSolverConditionInput
+  ) {
+    deleteSolver(input: $input, condition: $condition) {
+      id
+      solver
+      state
+      Orders
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -402,10 +393,13 @@ export const createMessage = /* GraphQL */ `
     createMessage(input: $input, condition: $condition) {
       id
       channelID
+      client
+      solver
       author
       body
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -417,10 +411,13 @@ export const updateMessage = /* GraphQL */ `
     updateMessage(input: $input, condition: $condition) {
       id
       channelID
+      client
+      solver
       author
       body
       createdAt
       updatedAt
+      owner
     }
   }
 `;
@@ -432,10 +429,13 @@ export const deleteMessage = /* GraphQL */ `
     deleteMessage(input: $input, condition: $condition) {
       id
       channelID
+      client
+      solver
       author
       body
       createdAt
       updatedAt
+      owner
     }
   }
 `;

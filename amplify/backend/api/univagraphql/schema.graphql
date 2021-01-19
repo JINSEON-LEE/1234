@@ -1,10 +1,12 @@
+
+
 type Order
   @model
   @searchable
   @auth(rules: [
-  { allow: owner , provider: userPools },
-  { allow: owner , ownerField: "solver", operations: [update, read]}
-
+  { allow: groups, groups: ["admin"] },
+  { allow: groups, groups: ["solver"], operations:[read]},
+  { allow: owner , provider: userPools, operations:[create, read, delete] }
   ])
   {
   id: ID!
@@ -14,28 +16,24 @@ type Order
   option3: Boolean! # 영어풀이
   username: String!
   deadline: AWSDateTime!
-  state: State!
-  pay: Int
+  state: State! #State, admin만 수정 가능
+  pay: Int #admin만 설정 가능
   problems: [Problem] @connection(name: "OrderProblems")
   message: Message
   createdAt: AWSDateTime!
-  solver: String
+  solver:String
 }
 
 type Review
   @model
   @searchable
   @auth(rules: [
-  # allow all authenticated users ability to create posts
-  # allow owners ability to update and delete their posts
   { allow: owner },
-
-  # allow all authenticated users to read posts
+  # allow all authenticated users to read reviews
   { allow: private, operations: [read] },
-
-  # allow all guest users (not authenticated) to read posts
+  # allow all guest users (not authenticated) to read reviews
   { allow: public, operations: [read] }
-
+  { allow: groups, groups: ["admin"] }
   ])
   {
   username: String!
@@ -46,7 +44,11 @@ type Review
   createdAt: AWSDateTime!
 }
 
-type Problem @model @auth(rules: [{ allow: owner, provider: userPools}]){
+type Problem @model @auth(rules: [
+{ allow: groups, groups: ["admin"] }
+{ allow: owner , provider: userPools, operations:[create, read] }
+{ allow: groups, groups: ["solver"], operations:[read]}
+]){
   id: ID!
   subject: Subject!
   image: String
@@ -56,11 +58,18 @@ type Problem @model @auth(rules: [{ allow: owner, provider: userPools}]){
   createdAt: AWSDateTime!
 }
 
-type Answer @model @auth(rules: [{ allow: owner , provider: userPools}]){
+type Answer @model @auth(rules: [
+{ allow: groups, groups: ["solver"]}
+{ allow: groups, groups: ["admin"] }
+{ allow: owner , ownerField : "client", operations:[read]}
+
+]){
   id: ID!
   image: String
   description: String
   problem: Problem @connection(name: "ProblemAnswers")
+  client: String
+  solver: String
 }
 
 enum State {
@@ -85,12 +94,38 @@ enum Subject {
   chemistry # 일반화학
   organicChemistry # 유기화학
 }
+enum SolverState{
+  wake
+  sleep
+}
+
+type Solver
+  @model
+  @auth(rules: [
+  { allow: groups, groups: ["admin"] }
+  { allow: owner , ownerField : "solver" , operations:[read]}
+  ])
+  @key(name: "bySolverName", fields: ["solver", "state"], queryField: "solverBySolverName")
+  {
+  solver:String!
+  state:SolverState!
+  Orders: [String]! #orderIDlist
+}
+
 
 type Message
+  @auth(rules: [
+  { allow: owner}
+  { allow: owner , ownerField : "client", operations:[read]}
+  { allow: owner , ownerField : "solver", operations:[read]}
+  { allow: groups, groups: ["admin"] }
+  ])
   @model
   @key(name: "byChannelID", fields: ["channelID", "createdAt"], queryField: "messagesByChannelID") {
   id: ID!
-  channelID: ID!
+  channelID: String! #Same as order.id
+  client:String!
+  solver:String!
   author: String!
   body: String!
   createdAt: AWSDateTime
