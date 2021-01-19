@@ -1,5 +1,5 @@
 #set( $indexPath = "/review/doc/_search" )
-#set( $nonKeywordFields = ["rating"] )
+#set( $nonKeywordFields = ["rating", "createdAt"] )
 #if( $util.isNullOrEmpty($context.args.sort) )
   #set( $sortDirection = "desc" )
   #set( $sortField = "id" )

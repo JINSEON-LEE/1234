@@ -188,16 +188,20 @@
                         }
                     ]
                 },
-                "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
-                "UserPoolConfig": {
-                    "UserPoolId": {
-                        "Ref": "AuthCognitoUserPoolId"
-                    },
-                    "AwsRegion": {
-                        "Ref": "AWS::Region"
-                    },
-                    "DefaultAction": "ALLOW"
-                }
+                "AuthenticationType": "API_KEY",
+                "AdditionalAuthenticationProviders": [
+                    {
+                        "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+                        "UserPoolConfig": {
+                            "UserPoolId": {
+                                "Ref": "AuthCognitoUserPoolId"
+                            },
+                            "AwsRegion": {
+                                "Ref": "AWS::Region"
+                            }
+                        }
+                    }
+                ]
             }
         },
         "GraphQLAPIKey": {
@@ -209,13 +213,14 @@
                         "ApiId"
                     ]
                 },
+                "Description": "guest",
                 "Expires": {
                     "Fn::If": [
                         "APIKeyExpirationEpochIsPositive",
                         {
                             "Ref": "APIKeyExpirationEpoch"
                         },
-                        1611383009
+                        1642571988
                     ]
                 }
             },
@@ -868,7 +873,6 @@
             "DependsOn": [
                 "GraphQLSchema",
                 "NoneDataSource",
-                "Review",
                 "Problem",
                 "Order",
                 "Answer"

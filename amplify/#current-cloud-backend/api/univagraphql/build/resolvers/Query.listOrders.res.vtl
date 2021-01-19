@@ -1,5 +1,5 @@
 ## [Start] Determine request authentication mode **
-#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) )
   #set( $authMode = "userPools" )
 #end
 ## [End] Determine request authentication mode **
@@ -29,6 +29,21 @@
       #end
       #if( $util.isString($allowedOwners0) )
         #if( $allowedOwners0 == $identityValue )
+          #set( $isLocalOwnerAuthorized = true )
+        #end
+      #end
+      ## Authorization rule: { allow: owner, ownerField: "solver", identityClaim: "cognito:username" } **
+      #set( $allowedOwners1 = $util.defaultIfNull($item.solver, []) )
+      #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+      #if( $util.isList($allowedOwners1) )
+        #foreach( $allowedOwner in $allowedOwners1 )
+          #if( $allowedOwner == $identityValue )
+            #set( $isLocalOwnerAuthorized = true )
+          #end
+        #end
+      #end
+      #if( $util.isString($allowedOwners1) )
+        #if( $allowedOwners1 == $identityValue )
           #set( $isLocalOwnerAuthorized = true )
         #end
       #end

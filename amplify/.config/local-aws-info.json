@@ -1,5 +1,7 @@
 {
-    "testtwo": {
-        "configLevel": "amplifyAdmin"
-    }
+  "testtwo": {
+    "configLevel": "project",
+    "useProfile": true,
+    "profileName": "default"
+  }
 }

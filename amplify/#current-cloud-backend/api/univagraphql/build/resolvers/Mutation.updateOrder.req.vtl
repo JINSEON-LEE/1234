@@ -1,5 +1,5 @@
 ## [Start] Determine request authentication mode **
-#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) && !$util.isNull($ctx.identity.defaultAuthStrategy) )
+#if( $util.isNullOrEmpty($authMode) && !$util.isNull($ctx.identity) && !$util.isNull($ctx.identity.sub) && !$util.isNull($ctx.identity.issuer) && !$util.isNull($ctx.identity.username) && !$util.isNull($ctx.identity.claims) && !$util.isNull($ctx.identity.sourceIp) )
   #set( $authMode = "userPools" )
 #end
 ## [End] Determine request authentication mode **
@@ -20,6 +20,10 @@
     $util.qr($ownerAuthExpressions.add("#owner0 = :identity0"))
     $util.qr($ownerAuthExpressionNames.put("#owner0", "owner"))
     $util.qr($ownerAuthExpressionValues.put(":identity0", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")))))
+    ## Authorization rule: { allow: owner, ownerField: "solver", identityClaim: "cognito:username" } **
+    $util.qr($ownerAuthExpressions.add("#owner1 = :identity1"))
+    $util.qr($ownerAuthExpressionNames.put("#owner1", "solver"))
+    $util.qr($ownerAuthExpressionValues.put(":identity1", $util.dynamodb.toDynamoDB($util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")))))
     ## [End] Owner Authorization Checks **
 
 
@@ -82,8 +86,6 @@
   ## [End] Throw if unauthorized **
 #end
 ## [End] Check authMode and execute owner/group checks **
-
-
 
 #if( $authCondition && $authCondition.expression != "" )
   #set( $condition = $authCondition )

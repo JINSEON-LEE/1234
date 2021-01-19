@@ -1,35 +1,41 @@
 type Order
   @model
   @searchable
-  @auth(rules: [{ allow: owner }])
-  @key(name: "byDateCreated", fields: ["state", "createdAt"], queryField: "RecordsByDateCreated"){
+  @auth(rules: [
+  { allow: owner , provider: userPools },
+  { allow: owner , ownerField: "solver", operations: [update, read]}
+
+  ])
+  {
   id: ID!
   subject: String!
   option1: Boolean! # 새로운풀이
   option2: Boolean! # 상세풀이
   option3: Boolean! # 영어풀이
   username: String!
-  solvername: String
   deadline: AWSDateTime!
   state: State!
   pay: Int
-
-  review : Review @connection(name: "OrderReview")
-
   problems: [Problem] @connection(name: "OrderProblems")
   message: Message
   createdAt: AWSDateTime!
+  solver: String
 }
 
-type Review @model @searchable{
+type Review
+  @model
+  @searchable
+  @auth(rules: [{ allow: public }])
+  {
   username: String!
   subject: String!
   rating: Float
   review: String
-  order: Order @connection(name: "OrderReview")
+  order: String!
+  createdAt: AWSDateTime!
 }
 
-type Problem @model @auth(rules: [{ allow: owner }]){
+type Problem @model @auth(rules: [{ allow: owner, provider: userPools}]){
   id: ID!
   subject: Subject!
   image: String
@@ -39,7 +45,7 @@ type Problem @model @auth(rules: [{ allow: owner }]){
   createdAt: AWSDateTime!
 }
 
-type Answer @model @auth(rules: [{ allow: owner }]){
+type Answer @model @auth(rules: [{ allow: owner , provider: userPools}]){
   id: ID!
   image: String
   description: String

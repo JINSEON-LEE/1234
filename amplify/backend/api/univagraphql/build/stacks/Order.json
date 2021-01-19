@@ -215,14 +215,6 @@
                     {
                         "AttributeName": "id",
                         "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "state",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "createdAt",
-                        "AttributeType": "S"
                     }
                 ],
                 "StreamSpecification": {
@@ -272,41 +264,7 @@
                             "Ref": "AWS::NoValue"
                         }
                     ]
-                },
-                "GlobalSecondaryIndexes": [
-                    {
-                        "IndexName": "byDateCreated",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "state",
-                                "KeyType": "HASH"
-                            },
-                            {
-                                "AttributeName": "createdAt",
-                                "KeyType": "RANGE"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "Fn::If": [
-                                "ShouldUsePayPerRequestBilling",
-                                {
-                                    "Ref": "AWS::NoValue"
-                                },
-                                {
-                                    "ReadCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableReadIOPS"
-                                    },
-                                    "WriteCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableWriteIOPS"
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
+                }
             },
             "DeletionPolicy": "Delete"
         },
@@ -822,70 +780,6 @@
                                     [
                                         "Mutation",
                                         "deleteOrder",
-                                        "res",
-                                        "vtl"
-                                    ]
-                                ]
-                            }
-                        }
-                    ]
-                }
-            }
-        },
-        "QueryRecordsByDateCreatedResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Ref": "GetAttGraphQLAPIApiId"
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "OrderDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "RecordsByDateCreated",
-                "TypeName": "Query",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Sub": [
-                        "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
-                        {
-                            "S3DeploymentBucket": {
-                                "Ref": "S3DeploymentBucket"
-                            },
-                            "S3DeploymentRootKey": {
-                                "Ref": "S3DeploymentRootKey"
-                            },
-                            "ResolverFileName": {
-                                "Fn::Join": [
-                                    ".",
-                                    [
-                                        "Query",
-                                        "RecordsByDateCreated",
-                                        "req",
-                                        "vtl"
-                                    ]
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Sub": [
-                        "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
-                        {
-                            "S3DeploymentBucket": {
-                                "Ref": "S3DeploymentBucket"
-                            },
-                            "S3DeploymentRootKey": {
-                                "Ref": "S3DeploymentRootKey"
-                            },
-                            "ResolverFileName": {
-                                "Fn::Join": [
-                                    ".",
-                                    [
-                                        "Query",
-                                        "RecordsByDateCreated",
                                         "res",
                                         "vtl"
                                     ]
