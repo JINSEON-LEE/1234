@@ -16,7 +16,7 @@ type Order @aws_cognito_user_pools {
   problems(filter: ModelProblemFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
 }
 
-type Review {
+type Review @aws_cognito_user_pools @aws_api_key {
   id: ID!
   username: String!
   subject: String!
@@ -25,6 +25,7 @@ type Review {
   order: String!
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+  owner: String
 }
 
 type Problem @aws_cognito_user_pools {
@@ -200,15 +201,15 @@ enum ModelAttributeTypes {
 }
 
 type Query {
-  getReview(id: ID!): Review
-  listReviews(filter: ModelReviewFilterInput, limit: Int, nextToken: String): ModelReviewConnection
   getMessage(id: ID!): Message
   listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
   messagesByChannelID(channelID: ID, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
-  searchReviews(filter: SearchableReviewFilterInput, sort: SearchableReviewSortInput, limit: Int, nextToken: String, from: Int): SearchableReviewConnection
   listOrders(filter: ModelOrderFilterInput, limit: Int, nextToken: String): ModelOrderConnection @aws_cognito_user_pools
   getOrder(id: ID!): Order @aws_cognito_user_pools
   searchOrders(filter: SearchableOrderFilterInput, sort: SearchableOrderSortInput, limit: Int, nextToken: String, from: Int): SearchableOrderConnection @aws_cognito_user_pools
+  getReview(id: ID!): Review @aws_api_key @aws_cognito_user_pools
+  listReviews(filter: ModelReviewFilterInput, limit: Int, nextToken: String): ModelReviewConnection @aws_api_key @aws_cognito_user_pools
+  searchReviews(filter: SearchableReviewFilterInput, sort: SearchableReviewSortInput, limit: Int, nextToken: String, from: Int): SearchableReviewConnection @aws_api_key @aws_cognito_user_pools
   listProblems(filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
   getProblem(id: ID!): Problem @aws_cognito_user_pools
   getAnswer(id: ID!): Answer @aws_cognito_user_pools
@@ -248,15 +249,15 @@ input DeleteOrderInput {
 }
 
 type Mutation {
-  createReview(input: CreateReviewInput!, condition: ModelReviewConditionInput): Review
-  updateReview(input: UpdateReviewInput!, condition: ModelReviewConditionInput): Review
-  deleteReview(input: DeleteReviewInput!, condition: ModelReviewConditionInput): Review
   createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message
   updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message
   deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message
   createOrder(input: CreateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
   updateOrder(input: UpdateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
   deleteOrder(input: DeleteOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
+  createReview(input: CreateReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
+  updateReview(input: UpdateReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
+  deleteReview(input: DeleteReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
   createProblem(input: CreateProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
   updateProblem(input: UpdateProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
   deleteProblem(input: DeleteProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
@@ -281,15 +282,15 @@ input ModelOrderConditionInput {
 }
 
 type Subscription {
-  onCreateReview: Review @aws_subscribe(mutations: ["createReview"])
-  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"])
-  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"])
   onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
   onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
   onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
   onCreateOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
   onUpdateOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
   onDeleteOrder(owner: String!, solver: String!): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
+  onCreateReview: Review @aws_subscribe(mutations: ["createReview"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"]) @aws_api_key @aws_cognito_user_pools
   onCreateProblem(owner: String!): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
   onUpdateProblem(owner: String!): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
   onDeleteProblem(owner: String!): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
@@ -298,7 +299,7 @@ type Subscription {
   onDeleteAnswer(owner: String!): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
 }
 
-type ModelReviewConnection {
+type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
   items: [Review]
   nextToken: String
 }
@@ -633,7 +634,7 @@ input SearchableReviewSortInput {
   direction: SearchableSortDirection
 }
 
-type SearchableReviewConnection {
+type SearchableReviewConnection @aws_api_key @aws_cognito_user_pools {
   items: [Review]
   nextToken: String
   total: Int
