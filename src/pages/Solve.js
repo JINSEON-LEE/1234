@@ -50,9 +50,21 @@ import SignIn from "./SignIn.js";
 import produce from "immer";
 import moment from "moment";
 
+import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
+
 import { createAnswer as createAnswerMutation } from "../graphql/mutations";
 
 Amplify.configure(awsconfig);
+const client = new AWSAppSyncClient({
+  url: awsconfig.aws_appsync_graphqlEndpoint,
+  region: awsconfig.aws_appsync_region,
+  auth: {
+    type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+    jwtToken: async () =>
+      (await Auth.currentSession()).getIdToken().getJwtToken(),
+  },
+  disableOffline: true,
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -212,7 +224,7 @@ const Solve = () => {
     console.log("fetch assigned orders");
     const username = await nowAuth().catch((err) => console.log(err));
     const FetchAssignedOrders = `query MyQuery($eq: String = "${username}") {
-      listOrders(filter: {state: {eq: solveWaiting}, solvername: {eq: $eq}}) {
+      listOrders(filter: {state: {eq: solveWaiting}, solver: {eq: $eq}}) {
         items {
           id
           deadline
@@ -226,7 +238,11 @@ const Solve = () => {
       }
     }`;
 
-    const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
+    const apiData = await API.graphql({
+      query: FetchAssignedOrders,
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    })
+    // const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
     console.log("API로 받은 orders", ordersFromAPI);
     setOrders(ordersFromAPI);
@@ -248,7 +264,10 @@ const Solve = () => {
         image
       }
     }`;
-    const apiData = await API.graphql(graphqlOperation(GetProblem));
+    const apiData = await API.graphql({
+      query: GetProblem,
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    })
     const problem = apiData.data.getProblem;
     if (problem.image) {
       const image = await Storage.get(problem.image);
@@ -286,6 +305,7 @@ const Solve = () => {
               answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
             },
           },
+          authMode: "AMAZON_COGNITO_USER_POOLS",
         });
 
         try {
@@ -311,11 +331,15 @@ const Solve = () => {
       }
     }`;
     try {
-      const res = await API.graphql(graphqlOperation(ChangeOrderState));
-      console.log(res);
+      const res = await API.graphql({
+        query: ChangeOrderState,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      })
+      console.log(res)
     } catch (e) {
       console.log(e);
     }
+    fetchFirst();
   }
   // enum State {
   //   payWaiting # 결제대기
