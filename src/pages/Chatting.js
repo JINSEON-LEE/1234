@@ -9,7 +9,7 @@ import { messagesByChannelId } from "../graphql/queries";
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import awsconfig from "../aws-exports";
 
-import './Chatting.css';
+import "./Chatting.css";
 Amplify.configure(awsconfig);
 
 const client = new AWSAppSyncClient({
@@ -84,9 +84,33 @@ function Chatting() {
   async function step() {
     const username = await nowAuth().catch((err) => console.log(err));
     console.log(username);
-    const subscription = API.graphql(
-      graphqlOperation(onCreateMessage, { owner: username })
-    ).subscribe({
+    const onCreateMessage1 = `subscription MySubscription {
+      onCreateMessage(solver: "34895469-cf78-48fd-b353-ace169b02276", client: "ac368fea-d29a-4f6e-a716-e103e6a8de97") {
+        body
+        channelID
+        author
+        client
+        id
+        solver
+        updatedAt
+        createdAt
+      }
+    }
+    `;
+    // const subscription = API.graphql(
+    //   graphqlOperation(onCreateMessage, { solver: username, client: "ac368fea-d29a-4f6e-a716-e103e6a8de97" })
+    // ).subscribe({
+    //   next: (event) => {
+    //     setMessages([...messages, event.value.data.onCreateMessage]);
+    //   },
+    //   error: (error) => {
+    //     console.log(error);
+    //   },
+    // });
+    const subscription = await API.graphql({
+      query: onCreateMessage1,
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    }).subscribe({
       next: (event) => {
         setMessages([...messages, event.value.data.onCreateMessage]);
       },
@@ -95,9 +119,9 @@ function Chatting() {
       },
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    // return () => {
+    //   subscription.unsubscribe();
+    // };
   }
 
   useEffect(() => {
@@ -134,6 +158,7 @@ function Chatting() {
 
   const handleChange = (event) => {
     setMessageBody(event.target.value);
+    console.log(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -141,19 +166,22 @@ function Chatting() {
     event.stopPropagation();
 
     const input = {
-      channelID: "39a59865-cc12-44a8-86ae-1374fc315d50",
       author: "js",
-      body: messageBody.trim(),
+      body: `${messageBody}`,
+      channelID: "39a59865-cc12-44a8-86ae-1374fc315d50",
+      client: "ac368fea-d29a-4f6e-a716-e103e6a8de97",
+      solver: "39a59865-cc12-44a8-86ae-1374fc315d50",
     };
 
     try {
       setMessageBody("");
       // await API.graphql(graphqlOperation(createMessage, { input }));
-      await API.graphql({
+      const res = await API.graphql({
         query: createMessage,
-        variables: input,
+        variables: { input },
         authMode: "AMAZON_COGNITO_USER_POOLS",
-      })
+      });
+      console.log(res);
     } catch (error) {
       console.warn(error);
     }
@@ -182,6 +210,7 @@ function Chatting() {
             onChange={handleChange}
             value={messageBody}
           />
+          <button onClick={handleSubmit}> 제출 </button>
         </form>
       </div>
     </div>

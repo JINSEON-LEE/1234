@@ -322,9 +322,9 @@ type Subscription {
   onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
   onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
   onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
-  onCreateMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["createMessage"]) @aws_cognito_user_pools
-  onUpdateMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["updateMessage"]) @aws_cognito_user_pools
-  onDeleteMessage(owner: String, client: String, solver: String): Message @aws_subscribe(mutations: ["deleteMessage"]) @aws_cognito_user_pools
+  onCreateMessage(owner: String): Message @aws_subscribe(mutations: ["createMessage"]) @aws_cognito_user_pools
+  onUpdateMessage(owner: String): Message @aws_subscribe(mutations: ["updateMessage"]) @aws_cognito_user_pools
+  onDeleteMessage(owner: String): Message @aws_subscribe(mutations: ["deleteMessage"]) @aws_cognito_user_pools
 }
 
 type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
@@ -570,6 +570,8 @@ input DeleteMessageInput {
 
 input ModelMessageConditionInput {
   channelID: ModelStringInput
+  client: ModelStringInput
+  solver: ModelStringInput
   author: ModelStringInput
   body: ModelStringInput
   createdAt: ModelStringInput
