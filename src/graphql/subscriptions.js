@@ -1,15 +1,60 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateMessage = /* GraphQL */ `
+  subscription OnCreateMessage {
+    onCreateMessage {
+      id
+      channelID
+      client
+      solver
+      author
+      body
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateMessage = /* GraphQL */ `
+  subscription OnUpdateMessage {
+    onUpdateMessage {
+      id
+      channelID
+      client
+      solver
+      author
+      body
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteMessage = /* GraphQL */ `
+  subscription OnDeleteMessage {
+    onDeleteMessage {
+      id
+      channelID
+      client
+      solver
+      author
+      body
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
 export const onCreateOrder = /* GraphQL */ `
   subscription OnCreateOrder($owner: String) {
     onCreateOrder(owner: $owner) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -38,11 +83,11 @@ export const onUpdateOrder = /* GraphQL */ `
   subscription OnUpdateOrder($owner: String) {
     onUpdateOrder(owner: $owner) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -71,11 +116,11 @@ export const onDeleteOrder = /* GraphQL */ `
   subscription OnDeleteOrder($owner: String) {
     onDeleteOrder(owner: $owner) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -156,11 +201,11 @@ export const onCreateProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -187,11 +232,11 @@ export const onUpdateProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -218,11 +263,11 @@ export const onDeleteProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -245,7 +290,6 @@ export const onCreateAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -267,7 +311,6 @@ export const onUpdateAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -289,7 +332,6 @@ export const onDeleteAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -337,63 +379,6 @@ export const onDeleteSolver = /* GraphQL */ `
       Orders
       createdAt
       updatedAt
-    }
-  }
-`;
-export const onCreateMessage = /* GraphQL */ `
-  subscription OnCreateMessage(
-    $owner: String
-    $client: String
-    $solver: String
-  ) {
-    onCreateMessage(owner: $owner, client: $client, solver: $solver) {
-      id
-      channelID
-      client
-      solver
-      author
-      body
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
-export const onUpdateMessage = /* GraphQL */ `
-  subscription OnUpdateMessage(
-    $owner: String
-    $client: String
-    $solver: String
-  ) {
-    onUpdateMessage(owner: $owner, client: $client, solver: $solver) {
-      id
-      channelID
-      client
-      solver
-      author
-      body
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
-export const onDeleteMessage = /* GraphQL */ `
-  subscription OnDeleteMessage(
-    $owner: String
-    $client: String
-    $solver: String
-  ) {
-    onDeleteMessage(owner: $owner, client: $client, solver: $solver) {
-      id
-      channelID
-      client
-      solver
-      author
-      body
-      createdAt
-      updatedAt
-      owner
     }
   }
 `;

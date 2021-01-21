@@ -11,15 +11,6 @@
   ## [Start] Static Group Authorization Checks **
   #set($isStaticGroupAuthorized = $util.defaultIfNull(
             $isStaticGroupAuthorized, false))
-  ## Authorization rule: { allow: groups, groups: ["solver"], groupClaim: "cognito:groups" } **
-  #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )
-  #set( $allowedGroups = ["solver"] )
-  #foreach( $userGroup in $userGroups )
-    #if( $allowedGroups.contains($userGroup) )
-      #set( $isStaticGroupAuthorized = true )
-      #break
-    #end
-  #end
   ## Authorization rule: { allow: groups, groups: ["admin"], groupClaim: "cognito:groups" } **
   #set( $userGroups = $util.defaultIfNull($ctx.identity.claims.get("cognito:groups"), []) )
   #set( $allowedGroups = ["admin"] )
@@ -49,6 +40,36 @@
   #end
   #if( $util.isString($allowedOwners0) )
     #if( $allowedOwners0 == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+  ## Authorization rule: { allow: owner, ownerField: "client", identityClaim: "cognito:username" } **
+  #set( $allowedOwners1 = $util.defaultIfNull($ctx.result.client, []) )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+  #if( $util.isList($allowedOwners1) )
+    #foreach( $allowedOwner in $allowedOwners1 )
+      #if( $allowedOwner == $identityValue )
+        #set( $isOwnerAuthorized = true )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners1) )
+    #if( $allowedOwners1 == $identityValue )
+      #set( $isOwnerAuthorized = true )
+    #end
+  #end
+  ## Authorization rule: { allow: owner, ownerField: "solver", identityClaim: "cognito:username" } **
+  #set( $allowedOwners2 = $util.defaultIfNull($ctx.result.solver, []) )
+  #set( $identityValue = $util.defaultIfNull($ctx.identity.claims.get("username"), $util.defaultIfNull($ctx.identity.claims.get("cognito:username"), "___xamznone____")) )
+  #if( $util.isList($allowedOwners2) )
+    #foreach( $allowedOwner in $allowedOwners2 )
+      #if( $allowedOwner == $identityValue )
+        #set( $isOwnerAuthorized = true )
+      #end
+    #end
+  #end
+  #if( $util.isString($allowedOwners2) )
+    #if( $allowedOwners2 == $identityValue )
       #set( $isOwnerAuthorized = true )
     #end
   #end

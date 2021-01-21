@@ -1,10 +1,10 @@
 type Order @aws_cognito_user_pools {
   id: ID!
+  username: String!
   subject: String!
   option1: Boolean!
   option2: Boolean!
   option3: Boolean!
-  username: String!
   deadline: AWSDateTime!
   state: State!
   pay: Int
@@ -45,7 +45,6 @@ type Answer @aws_cognito_user_pools {
   image: String
   description: String
   client: String
-  solver: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
   problem: Problem @aws_cognito_user_pools
@@ -190,11 +189,11 @@ input ModelStateInput {
 
 input ModelOrderFilterInput {
   id: ModelIDInput
+  username: ModelStringInput
   subject: ModelStringInput
   option1: ModelBooleanInput
   option2: ModelBooleanInput
   option3: ModelBooleanInput
-  username: ModelStringInput
   deadline: ModelStringInput
   state: ModelStateInput
   pay: ModelIntInput
@@ -239,11 +238,11 @@ type Query {
 
 input CreateOrderInput {
   id: ID
+  username: String!
   subject: String!
   option1: Boolean!
   option2: Boolean!
   option3: Boolean!
-  username: String!
   deadline: AWSDateTime!
   state: State!
   pay: Int
@@ -253,11 +252,11 @@ input CreateOrderInput {
 
 input UpdateOrderInput {
   id: ID!
+  username: String
   subject: String
   option1: Boolean
   option2: Boolean
   option3: Boolean
-  username: String
   deadline: AWSDateTime
   state: State
   pay: Int
@@ -291,11 +290,11 @@ type Mutation {
 }
 
 input ModelOrderConditionInput {
+  username: ModelStringInput
   subject: ModelStringInput
   option1: ModelBooleanInput
   option2: ModelBooleanInput
   option3: ModelBooleanInput
-  username: ModelStringInput
   deadline: ModelStringInput
   state: ModelStateInput
   pay: ModelIntInput
@@ -307,6 +306,9 @@ input ModelOrderConditionInput {
 }
 
 type Subscription {
+  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
+  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
+  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
   onCreateOrder(owner: String): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
   onUpdateOrder(owner: String): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
   onDeleteOrder(owner: String): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
@@ -322,9 +324,6 @@ type Subscription {
   onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
   onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
   onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
-  onCreateMessage(owner: String): Message @aws_subscribe(mutations: ["createMessage"]) @aws_cognito_user_pools
-  onUpdateMessage(owner: String): Message @aws_subscribe(mutations: ["updateMessage"]) @aws_cognito_user_pools
-  onDeleteMessage(owner: String): Message @aws_subscribe(mutations: ["deleteMessage"]) @aws_cognito_user_pools
 }
 
 type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
@@ -442,7 +441,6 @@ input ModelAnswerFilterInput {
   image: ModelStringInput
   description: ModelStringInput
   client: ModelStringInput
-  solver: ModelStringInput
   and: [ModelAnswerFilterInput]
   or: [ModelAnswerFilterInput]
   not: ModelAnswerFilterInput
@@ -453,7 +451,6 @@ input CreateAnswerInput {
   image: String
   description: String
   client: String
-  solver: String
   answerProblemId: ID
 }
 
@@ -462,7 +459,6 @@ input UpdateAnswerInput {
   image: String
   description: String
   client: String
-  solver: String
   answerProblemId: ID
 }
 
@@ -473,7 +469,6 @@ input DeleteAnswerInput {
 input ModelAnswerConditionInput {
   image: ModelStringInput
   description: ModelStringInput
-  solver: ModelStringInput
   and: [ModelAnswerConditionInput]
   or: [ModelAnswerConditionInput]
   not: ModelAnswerConditionInput
@@ -570,8 +565,6 @@ input DeleteMessageInput {
 
 input ModelMessageConditionInput {
   channelID: ModelStringInput
-  client: ModelStringInput
-  solver: ModelStringInput
   author: ModelStringInput
   body: ModelStringInput
   createdAt: ModelStringInput
@@ -652,11 +645,11 @@ input SearchableIDFilterInput {
 
 input SearchableOrderFilterInput {
   id: SearchableIDFilterInput
+  username: SearchableStringFilterInput
   subject: SearchableStringFilterInput
   option1: SearchableBooleanFilterInput
   option2: SearchableBooleanFilterInput
   option3: SearchableBooleanFilterInput
-  username: SearchableStringFilterInput
   deadline: SearchableStringFilterInput
   pay: SearchableIntFilterInput
   createdAt: SearchableStringFilterInput
@@ -673,11 +666,11 @@ enum SearchableSortDirection {
 
 enum SearchableOrderSortableFields {
   id
+  username
   subject
   option1
   option2
   option3
-  username
   deadline
   pay
   createdAt

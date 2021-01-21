@@ -10,11 +10,11 @@ export const listOrders = /* GraphQL */ `
     listOrders(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -31,11 +31,11 @@ export const getOrder = /* GraphQL */ `
   query GetOrder($id: ID!) {
     getOrder(id: $id) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -77,11 +77,11 @@ export const searchOrders = /* GraphQL */ `
     ) {
       items {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -194,11 +194,11 @@ export const getProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -221,7 +221,6 @@ export const getAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -248,7 +247,6 @@ export const listAnswers = /* GraphQL */ `
         image
         description
         client
-        solver
         createdAt
         updatedAt
       }

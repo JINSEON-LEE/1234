@@ -6,22 +6,23 @@ type Order
   @auth(rules: [
   { allow: groups, groups: ["admin"] },
   { allow: groups, groups: ["solver"], operations:[read]},
-  { allow: owner , provider: userPools, operations:[create, read, delete] }
+  { allow: owner , operations:[create, read, delete] }
   ])
   {
+
   id: ID!
+  username: String!
   subject: String!
   option1: Boolean! # 새로운풀이
   option2: Boolean! # 상세풀이
   option3: Boolean! # 영어풀이
-  username: String!
   deadline: AWSDateTime!
   state: State! #State, admin만 수정 가능
   pay: Int #admin만 설정 가능
   problems: [Problem] @connection(name: "OrderProblems")
   message: Message
   createdAt: AWSDateTime!
-  solver:String
+  solver:String #sub Id로 지정
 }
 
 type Review
@@ -36,7 +37,7 @@ type Review
   { allow: groups, groups: ["admin"] }
   ])
   {
-  username: String!
+  username: String! #email로 변환에서 앞부분만 잘라서 저장
   subject: String!
   rating: Float
   review: String
@@ -46,7 +47,7 @@ type Review
 
 type Problem @model @auth(rules: [
 { allow: groups, groups: ["admin"] }
-{ allow: owner , provider: userPools, operations:[create, read] }
+{ allow: owner , operations:[create, read] }
 { allow: groups, groups: ["solver"], operations:[read]}
 ]){
   id: ID!
@@ -69,7 +70,6 @@ type Answer @model @auth(rules: [
   description: String
   problem: Problem @connection(name: "ProblemAnswers")
   client: String
-  solver: String
 }
 
 enum State {
@@ -107,26 +107,27 @@ type Solver
   ])
   @key(name: "bySolverName", fields: ["solver", "state"], queryField: "solverBySolverName")
   {
-  solver:String!
+  solver:String! #id로 입력
   state:SolverState!
   Orders: [String]! #orderIDlist
 }
 
 
 type Message
+
+  @model(subscriptions:{level:public})
   @auth(rules: [
   { allow: owner}
-  { allow: owner , ownerField : "client", operations:[read]}
-  { allow: owner , ownerField : "solver", operations:[read]}
+  { allow: owner , ownerField : "client"}
+  { allow: owner , ownerField : "solver"}
   { allow: groups, groups: ["admin"] }
   ])
-  @model
   @key(name: "byChannelID", fields: ["channelID", "createdAt"], queryField: "messagesByChannelID") {
   id: ID!
   channelID: String! #Same as order.id
   client:String!
   solver:String!
-  author: String!
+  author: String! #client는 이메일, solver는 유니바xx로
   body: String!
   createdAt: AWSDateTime
   updatedAt: AWSDateTime

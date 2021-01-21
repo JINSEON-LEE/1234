@@ -105,7 +105,7 @@ function Chatting(props) {
     `;
     const subscription = API.graphql({
       query: onCreateMessage,
-      variable: {solver: `${props.solver}`, client: `${props.client}`},
+      variable: {solver: `${props.solver}`, client: `${props.client}`, owner: `${props.solver}`},
       authMode: "AMAZON_COGNITO_USER_POOLS",
     }).subscribe({
     // const subscription = API.graphql(

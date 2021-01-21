@@ -8,11 +8,11 @@ export const createOrder = /* GraphQL */ `
   ) {
     createOrder(input: $input, condition: $condition) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -44,11 +44,11 @@ export const updateOrder = /* GraphQL */ `
   ) {
     updateOrder(input: $input, condition: $condition) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -80,11 +80,11 @@ export const deleteOrder = /* GraphQL */ `
   ) {
     deleteOrder(input: $input, condition: $condition) {
       id
+      username
       subject
       option1
       option2
       option3
-      username
       deadline
       state
       pay
@@ -177,11 +177,11 @@ export const createProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -211,11 +211,11 @@ export const updateProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -245,11 +245,11 @@ export const deleteProblem = /* GraphQL */ `
       updatedAt
       order {
         id
+        username
         subject
         option1
         option2
         option3
-        username
         deadline
         state
         pay
@@ -275,7 +275,6 @@ export const createAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -300,7 +299,6 @@ export const updateAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
@@ -325,7 +323,6 @@ export const deleteAnswer = /* GraphQL */ `
       image
       description
       client
-      solver
       createdAt
       updatedAt
       problem {
