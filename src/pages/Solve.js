@@ -49,6 +49,7 @@ import AppFooter from "../views/AppFooter";
 import SignIn from "./SignIn.js";
 import produce from "immer";
 import moment from "moment";
+import Chatting from "./Chatting.js";
 
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
@@ -234,6 +235,7 @@ const Solve = () => {
               id
             }
           }
+          username
         }
       }
     }`;
@@ -666,49 +668,8 @@ const Solve = () => {
                   padding: "0em 2em",
                 }}
               >
-                <Typography variant="h6" align="left">
-                  <br />
-                  사용자 : 왜 ....인가요?
-                  <br />
-                  <br />
-                </Typography>
-                <Typography variant="h6" align="right">
-                  멘토 : ......입니다
-                  <br />
-                  <br />
-                </Typography>
-                <Typography variant="h6" align="left">
-                  사용자 : [사진] <br />
-                  <br />
-                  사용자 : 이건가요?
-                  <br />
-                  <br />
-                </Typography>
-                <Typography variant="h6" align="right">
-                  멘토 : 네 맞아요!
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                </Typography>
-                <Divider />
-                <Grid alignItems="flex-end">
-                  <Button variant="outlined">+수식</Button>
-                  ----------------[채팅입력]----------------
-                  <Button variant="outlined">[전송]</Button>
-                </Grid>
+                <Chatting solver={user.username} client={orders[selectedOrderIndex].username} channelID={orders[selectedOrderIndex].id}/>
+                {user.username}, {orders[selectedOrderIndex].username}, {orders[selectedOrderIndex].id}
               </Box>
             </React.Fragment>
             <React.Fragment>

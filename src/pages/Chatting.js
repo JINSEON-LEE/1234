@@ -23,13 +23,14 @@ const client = new AWSAppSyncClient({
   disableOffline: true,
 });
 
-function Chatting() {
+function Chatting(props) {
   const [messages, setMessages] = useState([]);
   const [messageBody, setMessageBody] = useState("");
   const [username, setUsername] = useState("");
 
+  console.log(props)
   useEffect(() => {
-    const MessagesQuery = `query MyQuery($channelID: String = "${"39a59865-cc12-44a8-86ae-1374fc315d50"}") {
+    const MessagesQuery = `query MyQuery($channelID: String = "${props.channelID}") {
         messagesByChannelID(channelID: $channelID, sortDirection: ASC) {
           nextToken
           items {
@@ -75,17 +76,22 @@ function Chatting() {
     //   .catch((error) => { console.log(error) })
   }, []);
 
-  async function nowAuth() {
-    const nowAuth = await Auth.currentUserInfo();
-    const username = nowAuth.username;
-    return username;
-  }
+  // async function nowAuth() {
+  //   const nowAuth = await Auth.currentUserInfo();
+  //   const username = nowAuth.username;
+  //   return username;
+  // }
 
-  async function step() {
-    const username = await nowAuth().catch((err) => console.log(err));
-    console.log(username);
+  // async function step() {
+  //   const username = await nowAuth().catch((err) => console.log(err));
+  //   console.log(username);
+  //   return username;
+  // }
+
+  useEffect(() => {
+    // const username = step();
     const onCreateMessage1 = `subscription MySubscription {
-      onCreateMessage(solver: "34895469-cf78-48fd-b353-ace169b02276", client: "ac368fea-d29a-4f6e-a716-e103e6a8de97") {
+      onCreateMessage(solver: "${props.solver}", client: "${props.client}") {
         body
         channelID
         author
@@ -97,64 +103,27 @@ function Chatting() {
       }
     }
     `;
-    // const subscription = API.graphql(
-    //   graphqlOperation(onCreateMessage, { solver: username, client: "ac368fea-d29a-4f6e-a716-e103e6a8de97" })
-    // ).subscribe({
-    //   next: (event) => {
-    //     setMessages([...messages, event.value.data.onCreateMessage]);
-    //   },
-    //   error: (error) => {
-    //     console.log(error);
-    //   },
-    // });
-    const subscription = await API.graphql({
-      query: onCreateMessage1,
+    const subscription = API.graphql({
+      query: onCreateMessage,
+      variable: {solver: `${props.solver}`, client: `${props.client}`},
       authMode: "AMAZON_COGNITO_USER_POOLS",
     }).subscribe({
+    // const subscription = API.graphql(
+    //   graphqlOperation(onCreateMessage)
+    // ).subscribe({
       next: (event) => {
         setMessages([...messages, event.value.data.onCreateMessage]);
+        console.log(messages);
       },
       error: (error) => {
         console.log(error);
       },
     });
-
-    // return () => {
-    //   subscription.unsubscribe();
-    // };
-  }
-
-  useEffect(() => {
-    step();
-
-    // const subscription = API
-    //   .graphql(graphqlOperation(onCreateMessage), {owner: Auth.currentAuthenticatedUser()})
-    //   .subscribe({
-    //     next: (event) => {
-    //       setMessages([...messages, event.value.data.onCreateMessage]);
-    //     }
-    //   })
-    // const subscription = API
-    //   .graphql({
-    //     query: onCreateMessage,
-    //     authMode: "AMAZON_COGNITO_USER_POOLS",
-    //   })
-    //   .subscribe({
-    //     next: (event) => {
-    //       setMessages([...messages, event.value.data.onCreateMessage]);
-    //     },
-    //     authMode: "AMAZON_COGNITO_USER_POOLS",
-    //   });
-
-    //   .then((response) => {
-    //     console.log(response)
-    //   })
-    //   .catch((error) => { console.log(error) })
-
-    // return () => {
-    //   subscription.unsubscribe();
-    // }
-  }, [username, messages]);
+    console.log(messages);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [messages]);
 
   const handleChange = (event) => {
     setMessageBody(event.target.value);
@@ -168,9 +137,9 @@ function Chatting() {
     const input = {
       author: "js",
       body: `${messageBody}`,
-      channelID: "39a59865-cc12-44a8-86ae-1374fc315d50",
-      client: "ac368fea-d29a-4f6e-a716-e103e6a8de97",
-      solver: "39a59865-cc12-44a8-86ae-1374fc315d50",
+      channelID: `${props.channelID}`,
+      client: `${props.client}`,
+      solver: `${props.solver}`,
     };
 
     try {
