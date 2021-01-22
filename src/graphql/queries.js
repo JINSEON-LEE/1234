@@ -260,7 +260,7 @@ export const getSolver = /* GraphQL */ `
       id
       solver
       state
-      Orders
+      orders
       createdAt
       updatedAt
     }
@@ -277,7 +277,7 @@ export const listSolvers = /* GraphQL */ `
         id
         solver
         state
-        Orders
+        orders
         createdAt
         updatedAt
       }
@@ -306,7 +306,7 @@ export const solverBySolverName = /* GraphQL */ `
         id
         solver
         state
-        Orders
+        orders
         createdAt
         updatedAt
       }

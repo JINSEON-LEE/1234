@@ -107,9 +107,10 @@ type Solver
   ])
   @key(name: "bySolverName", fields: ["solver", "state"], queryField: "solverBySolverName")
   {
-  solver:String! #id로 입력
+  id:ID!
+  solver:String! #cognito id
   state:SolverState!
-  Orders: [String]! #orderIDlist
+  orders: [String] #orderIDlist
 }
 
 

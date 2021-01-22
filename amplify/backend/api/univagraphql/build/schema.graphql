@@ -82,7 +82,7 @@ type Solver @aws_cognito_user_pools {
   id: ID!
   solver: String!
   state: SolverState!
-  Orders: [String]!
+  orders: [String]
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -485,9 +485,10 @@ input ModelSolverStateInput {
 }
 
 input ModelSolverFilterInput {
+  id: ModelIDInput
   solver: ModelStringInput
   state: ModelSolverStateInput
-  Orders: ModelStringInput
+  orders: ModelStringInput
   and: [ModelSolverFilterInput]
   or: [ModelSolverFilterInput]
   not: ModelSolverFilterInput
@@ -497,13 +498,14 @@ input CreateSolverInput {
   id: ID
   solver: String!
   state: SolverState!
-  Orders: [String]!
+  orders: [String]
 }
 
 input UpdateSolverInput {
+  id: ID!
   solver: String
   state: SolverState
-  Orders: [String]
+  orders: [String]
 }
 
 input DeleteSolverInput {
@@ -512,7 +514,7 @@ input DeleteSolverInput {
 
 input ModelSolverConditionInput {
   state: ModelSolverStateInput
-  Orders: ModelStringInput
+  orders: ModelStringInput
   and: [ModelSolverConditionInput]
   or: [ModelSolverConditionInput]
   not: ModelSolverConditionInput

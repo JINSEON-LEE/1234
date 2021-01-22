@@ -6,10 +6,11 @@ import {
   AmplifySignOut,
   AmplifySignIn,
   AmplifySignUp,
+  withAuthenticator,
 } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components";
 import awsconfig from "../aws-exports";
-import { listProblems } from "../graphql/queries";
+import { listProblems, searchOrders, listOrders } from "../graphql/queries";
 
 import Typography from "../components/Typography";
 import {
@@ -54,7 +55,7 @@ import Chatting from "./Chatting.js";
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
 import { createAnswer as createAnswerMutation } from "../graphql/mutations";
-
+import { solverBySolverName, } from "../graphql/queries";
 Amplify.configure(awsconfig);
 const client = new AWSAppSyncClient({
   url: awsconfig.aws_appsync_graphqlEndpoint,
@@ -141,7 +142,6 @@ const StyledTableCell = withStyles((theme) => ({
 
 const Solve = () => {
   const classes = useStyles();
-
   const initialSolutionForm = {
     description: "",
     image: "",
@@ -224,28 +224,34 @@ const Solve = () => {
   async function fetchOrders() {
     console.log("fetch assigned orders");
     const username = await nowAuth().catch((err) => console.log(err));
-    const FetchAssignedOrders = `query MyQuery($eq: String = "${username}") {
-      listOrders(filter: {state: {eq: solveWaiting}, solver: {eq: $eq}}) {
+    console.log('username', username)
+
+    const Orderwithprob = `query MyQuery($filter: ModelOrderFilterInput = {solver: {eq: "${username}"}}) {
+      listOrders(filter: $filter) {
         items {
-          id
-          deadline
-          state
           problems {
             items {
+              createdAt
+              description
               id
+              image
+              subject
             }
           }
-          username
+          deadline
         }
       }
-    }`;
-
+}`;
     const apiData = await API.graphql({
-      query: FetchAssignedOrders,
+      query: Orderwithprob,
+      variables : {filter: {solver: {eq: username} }},
       authMode: "AMAZON_COGNITO_USER_POOLS",
     })
+    console.log("apiData", apiData)
     // const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
+
+
     console.log("API로 받은 orders", ordersFromAPI);
     setOrders(ordersFromAPI);
     return ordersFromAPI;
@@ -355,9 +361,9 @@ const Solve = () => {
   //   finished # 완료
   // }
 
-  if (orders.length === 0) return <div>There isn't problem.</div>;
+  if (!orders) return <div>There isn't problem.</div>;
   if (problems.length === 0) return <div>IMAGE LOADING...</div>;
-  return authState === AuthState.SignedIn && user ? (
+  return (
     <div className="Solve">
       <React.Fragment>
         <AppAppBar isLogin={authState} />
@@ -695,9 +701,7 @@ const Solve = () => {
         <AppFooter />
       </React.Fragment>
     </div>
-  ) : (
-    <SignIn />
-  );
+  )
 };
 
-export default withRoot(Solve);
+export default withAuthenticator(Solve);

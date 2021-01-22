@@ -352,7 +352,7 @@ export const onCreateSolver = /* GraphQL */ `
       id
       solver
       state
-      Orders
+      orders
       createdAt
       updatedAt
     }
@@ -364,7 +364,7 @@ export const onUpdateSolver = /* GraphQL */ `
       id
       solver
       state
-      Orders
+      orders
       createdAt
       updatedAt
     }
@@ -376,7 +376,7 @@ export const onDeleteSolver = /* GraphQL */ `
       id
       solver
       state
-      Orders
+      orders
       createdAt
       updatedAt
     }
