@@ -226,7 +226,7 @@ const Solve = () => {
     const username = await nowAuth().catch((err) => console.log(err));
     console.log('username', username)
 
-    const Orderwithprob = `query MyQuery($filter: ModelOrderFilterInput = {solver: {eq: "${username}"}}) {
+    const Orderwithprob = `query MyQuery($filter: ModelOrderFilterInput = {solver: {eq: "${username}"}, state: {eq: payWaiting}}) {
       listOrders(filter: $filter) {
         items {
           problems {
