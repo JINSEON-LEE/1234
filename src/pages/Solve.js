@@ -704,4 +704,4 @@ const Solve = () => {
   )
 };
 
-export default withAuthenticator(Solve);
+export default withRoot(withAuthenticator(Solve));
