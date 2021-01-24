@@ -9,10 +9,10 @@ import {
   withAuthenticator,
 } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components";
-import awsconfig from "../aws-exports";
-import { listProblems, searchOrders, listOrders } from "../graphql/queries";
+import awsconfig from "./aws-exports";
+import { listProblems, searchOrders, listOrders } from "./graphql/queries";
 
-import Typography from "../components/Typography";
+import Typography from "./components/Typography";
 import {
   Grid,
   Button,
@@ -40,22 +40,22 @@ import HelpIcon from "@material-ui/icons/Help";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-import ex2 from "../image/electro.png";
+import ex2 from "./image/electro.png";
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
 import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
-import withRoot from "../withRoot";
+import withRoot from "./withRoot";
 
-import AppAppBar from "../views/AppAppBar";
-import AppFooter from "../views/AppFooter";
-import SignIn from "./SignIn.js";
+import AppAppBar from "./views/AppAppBar";
+import AppFooter from "./views/AppFooter";
+import SignIn from "./pages/SignIn.js";
 import produce from "immer";
 import moment from "moment";
-import Chatting from "./Chatting.js";
+import Chatting from "./pages/Chatting.js";
 
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-import { createAnswer as createAnswerMutation } from "../graphql/mutations";
-import { solverBySolverName, } from "../graphql/queries";
+import { createAnswer as createAnswerMutation } from "./graphql/mutations";
+import { solverBySolverName, } from "./graphql/queries";
 Amplify.configure(awsconfig);
 const client = new AWSAppSyncClient({
   url: awsconfig.aws_appsync_graphqlEndpoint,
@@ -145,6 +145,7 @@ const Solve = () => {
   const initialSolutionForm = {
     description: "",
     image: "",
+    image_url: "",
   };
 
   const [authState, setAuthState] = useState();
@@ -153,21 +154,26 @@ const Solve = () => {
   const [selectedProblemIndex, setSelectedProblemIndex] = React.useState(0);
   const [orders, setOrders] = useState([]);
   const [problems, setProblems] = useState([]);
-  const [solutionForm, setSolutionForm] = useState([initialSolutionForm]);
+  const [solutionForm, setSolutionForm] = useState([]);
   const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
+  const [answeredOrderId, setAnsweredOrderId] = useState(["e38c6f1d-1dfa-47b7-8557-3c814f158250"])
 
-  console.log(typeof solutionForm);
   const handleListItemClick = (event, index) => {
+    let lastSelectedOrderIndex = selectedOrderIndex;
     console.log("현재 click한 index", index);
     setSelectedOrderIndex(index);
     setSelectedProblemIndex(0);
     setViewSol(false);
-    setProblems([]);
-    setSolutionForm([initialSolutionForm])
-    // for (let i = 0; i < orders[selectedOrderIndex].problems.items.length; i++) {
-    //   problems.push(initialSolutionForm)
-    // }
+    if (index !== lastSelectedOrderIndex) {
+      setProblems([]);
+      let solutionForm1 = []
+      for (let i = 0; i < orders[index].problems.items.length; i++) {
+        solutionForm1.push(initialSolutionForm)
+      }
+      console.log(solutionForm1);
+      setSolutionForm(solutionForm1);
+    }
   };
 
   const handleViewRefSol = () => {
@@ -184,15 +190,16 @@ const Solve = () => {
         (data) => console.log(data) & setUser(data) & setAuthState("signedin")
       )
       .catch((err) => console.log(err));
-    // onAuthUIStateChange((nextAuthState, authData) => {
-    //   setAuthState(nextAuthState);
-    //   setUser(authData);
-    // });
+    onAuthUIStateChange((nextAuthState, authData) => {
+      setAuthState(nextAuthState);
+      setUser(authData);
+    });
   }, []);
 
   React.useLayoutEffect(() => {
+    console.log(answeredOrderId)
     fetchFirst();
-  }, [authState]);
+  }, [authState, answeredOrderId]);
 
   React.useLayoutEffect(() => {
     console.log(solutionForm);
@@ -215,33 +222,36 @@ const Solve = () => {
     await getProblem(ordersFromAPI).catch((error) => {
       console.log(error);
     });
-    // for (let i = 0; i < ordersFromAPI[selectedOrderIndex].problems.items.length; i++) {
-    //   problems.push(initialSolutionForm)
-    // }
   }
 
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
+  /**
+   * solver name과 state:solving으로 Order를 불러오는 과정
+   * 마지막에 filter로 이미 푼 문제를 걸러 order list를 return한다. 
+   */
   async function fetchOrders() {
     console.log("fetch assigned orders");
     const username = await nowAuth().catch((err) => console.log(err));
     console.log('username', username)
 
-    const Orderwithprob = `query MyQuery($filter: ModelOrderFilterInput = {solver: {eq: "${username}"}, state: {eq: payWaiting}}) {
-      listOrders(filter: $filter) {
+    const Orderwithprob = `query MyQuery($eq: String = "${username}", $eq1: State = ${"solving"}) {
+      listOrders(filter: {solver: {eq: $eq}, state: {eq: $eq1}}) {
         items {
           problems {
             items {
-              createdAt
               description
               id
               image
               subject
             }
           }
+          id
           deadline
+          username
         }
       }
-}`;
+    }
+    `;
     const apiData = await API.graphql({
       query: Orderwithprob,
       variables : {filter: {solver: {eq: username} }},
@@ -250,13 +260,21 @@ const Solve = () => {
     console.log("apiData", apiData)
     // const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
-
-
-    console.log("API로 받은 orders", ordersFromAPI);
+    console.log("API로 받은 orders 전부", ordersFromAPI);
+    for(let i=0;i<answeredOrderId.length;i++) {
+      ordersFromAPI.filter(order => order.id !== answeredOrderId[i]);
+    }
+    console.log("API로 받은 orders 중 answered 안된 것", ordersFromAPI);
     setOrders(ordersFromAPI);
     return ordersFromAPI;
   }
 
+  /**
+   * orders list를 가지고 problems를 set하는 함수
+   * 기존 orders에서 description과 image 정보를 가져온 후, 
+   * s3 버켓에서 사진 url을 꺼내 image_url에 저장한다.
+   * @param {Object} orders 앞서 fetchOrders에서 받아온 orders or 전역변수 orders
+   */
   async function getProblem(orders) {
     if (problems[selectedProblemIndex]) return;
     if (!solutionForm[selectedProblemIndex]) {
@@ -264,29 +282,20 @@ const Solve = () => {
     }
     console.log("함수에서 받은 index", selectedOrderIndex);
     console.log(
-      orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
+      "문제 id: ", orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
     );
-    const GetProblem = `query GetProblem($id: ID = "${orders[selectedOrderIndex].problems.items[selectedProblemIndex].id}") {
-      getProblem(id: $id) {
-        description
-        image
-      }
-    }`;
-    const apiData = await API.graphql({
-      query: GetProblem,
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-    })
-    const problem = apiData.data.getProblem;
-    if (problem.image) {
-      const image = await Storage.get(problem.image);
-      problem.image_url = image;
+    
+    let problem1 = Object.assign({}, orders[selectedOrderIndex].problems.items[selectedProblemIndex])
+    if (problem1.image) {
+      const image = await Storage.get(problem1.image);
+      problem1.image_url = image;
     }
-    console.log(problem);
     setProblems(
       produce(problems, (draft) => {
-        draft[selectedProblemIndex] = problem;
+        draft[selectedProblemIndex] = problem1;
       })
     );
+    console.log(problem1);
   }
 
   function getLastProblem() {
@@ -303,59 +312,84 @@ const Solve = () => {
    */
   async function createAnswer() {
     for (var i = 0; i < solutionForm.length; i++) {
-      try {
-        const data = await API.graphql({
-          query: createAnswerMutation,
-          variables: {
-            input: {
-              image: "sol_" + problems[i].image,
-              description: solutionForm[i].description,
-              answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
-            },
-          },
-          authMode: "AMAZON_COGNITO_USER_POOLS",
-        });
-
+      if(!solutionForm[i].description || solutionForm[i].image) {
+        alert(String(i)+"번째"+" 풀이를 채워주세요!")
+        return
+      }
+      if (solutionForm[i].image) {
         try {
-          const res = await Storage.put(
-            "sol_" + problems[i].image,
-            solutionForm[i].image
-          ); //S3 버킷에 파일 저장
-          console.log(res);
+          const data = await API.graphql({
+            query: createAnswerMutation,
+            variables: {
+              input: {
+                client: orders[selectedOrderIndex].username,
+                image: "sol_" + problems[i].image,
+                description: solutionForm[i].description,
+                answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
+              },
+            },
+            authMode: "AMAZON_COGNITO_USER_POOLS",
+          });
+  
+          try {
+            const res = await Storage.put(
+              "sol_" + problems[i].image,
+              solutionForm[i].image
+            ); //S3 버킷에 파일 저장
+            console.log(res);
+          } catch (e) {
+            console.log("s3 error occurred. error message : ", e);
+          }
+  
+          console.log("create Answer successfully", i, "번째");
+          console.log(data);
         } catch (e) {
           console.log("graphql error occurred. error message : ", e);
         }
-
-        console.log("create Answer successfully", i, "번째");
-        console.log(data);
-      } catch (e) {
-        console.log("graphql error occurred. error message : ", e);
+      } else {
+        try {
+          const data = await API.graphql({
+            query: createAnswerMutation,
+            variables: {
+              input: {
+                client: orders[selectedOrderIndex].username,
+                description: solutionForm[i].description,
+                answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
+              },
+            },
+            authMode: "AMAZON_COGNITO_USER_POOLS",
+          });
+          console.log("create Answer successfully", i, "번째");
+          console.log(data);
+        } catch(e) {
+          console.log("graphql error occurred. error message : ", e);
+        }
       }
     }
-    const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
-      updateOrder(input: {id: $id, state: mentoring}) {
-        updatedAt
-        state
-      }
-    }`;
-    try {
-      const res = await API.graphql({
-        query: ChangeOrderState,
-        authMode: "AMAZON_COGNITO_USER_POOLS",
-      })
-      console.log(res)
-    } catch (e) {
-      console.log(e);
-    }
-    fetchFirst();
+    answeredOrderId.push(orders[selectedOrderIndex].id)
+    // const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
+    //   updateOrder(input: {id: $id, state: mentoring}) {
+    //     updatedAt
+    //     state
+    //   }
+    // }`;
+    // try {
+    //   const res = await API.graphql({
+    //     query: ChangeOrderState,
+    //     authMode: "AMAZON_COGNITO_USER_POOLS",
+    //   })
+    //   console.log(res)
+    // } catch (e) {
+    //   console.log(e);
+    // }
   }
+
   // enum State {
   //   payWaiting # 결제대기
   //   priceWaiting #금액책정대기
   //   canceledWaiting # 풀이취소대기
   //   canceled # 풀이취소
   //   assignWaiting # 풀이자배정대기
-  //   solveWaiting # 문제풀이대기
   //   solving # 문제풀이중
   //   mentoring # 멘토링중
   //   finished # 완료

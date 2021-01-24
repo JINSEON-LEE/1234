@@ -119,7 +119,7 @@ function Chatting(props) {
         console.log(error);
       },
     });
-    console.log(messages);
+    console.log("Messages:", messages);
     return () => {
       subscription.unsubscribe();
     };
