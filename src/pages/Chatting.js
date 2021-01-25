@@ -4,7 +4,7 @@ import { API, Storage, Amplify, Auth, graphqlOperation } from "aws-amplify";
 import "@aws-amplify/pubsub";
 
 import { createMessage } from "../graphql/mutations";
-import { onCreateMessage } from "../graphql/subscriptions";
+import { onCreateMessageByChannelId } from "../graphql/subscriptions";
 import { messagesByChannelId } from "../graphql/queries";
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 import awsconfig from "../aws-exports";
@@ -89,30 +89,43 @@ function Chatting(props) {
   // }
 
   useEffect(() => {
-    // const username = step();
-    const onCreateMessage1 = `subscription MySubscription {
-      onCreateMessage(solver: "${props.solver}", client: "${props.client}") {
-        body
-        channelID
-        author
-        client
-        id
-        solver
-        updatedAt
-        createdAt
+    // // const username = step();
+    // const onCreateMessageByChannelId = `subscription MySubscription {
+    //   onCreateMessageByChannelId( channelID:"${props.channelID}") {
+    //     body
+    //     channelID
+    //     author
+    //     client
+    //     id
+    //     solver
+    //     updatedAt
+    //     createdAt
+    //   }
+    // }
+    // `;
+
+    const onCreateMessageByChannelId = /* GraphQL */ `
+      subscription OnCreateMessageByChannelId($channelID: String = "${props.channelID}") {
+        onCreateMessageByChannelID(channelID: $channelID) {
+          id
+          channelID
+          client
+          solver
+          author
+          body
+          createdAt
+          updatedAt
+          owner
+        }
       }
-    }
     `;
     const subscription = API.graphql({
-      query: onCreateMessage,
-      variable: {solver: `${props.solver}`, client: `${props.client}`, owner: `${props.solver}`},
-      authMode: "AMAZON_COGNITO_USER_POOLS",
+      query: onCreateMessageByChannelId,
+      authMode: "API_KEY",
     }).subscribe({
-    // const subscription = API.graphql(
-    //   graphqlOperation(onCreateMessage)
-    // ).subscribe({
       next: (event) => {
-        setMessages([...messages, event.value.data.onCreateMessage]);
+        console.log("evene", event.value.data)
+        setMessages([...messages, event.value.data.onCreateMessageByChannelID]);
         console.log(messages);
       },
       error: (error) => {
@@ -160,14 +173,15 @@ function Chatting(props) {
     <div className="container">
       <div className="messages">
         <div className="messages-scroller">
-          {messages.map((message) => (
+          {messages.map((message) => {
+            if(message) return (
             <div
               key={message.id}
               className={message.author === "js" ? "message me" : "message"}
             >
               {message.body}
             </div>
-          ))}
+          )})}
         </div>
       </div>
       <div className="chat-bar">

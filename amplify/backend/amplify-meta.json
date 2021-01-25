@@ -27,7 +27,7 @@
         "IdentityPoolName": "testAuthIdentityPool__testtwo",
         "UserPoolName": "UnivaFront"
       },
-      "lastPushTimeStamp": "2021-01-22T05:53:05.556Z",
+      "lastPushTimeStamp": "2021-01-25T04:00:15.452Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/auth/UnivaFront-cloudformation-template.yml",
         "logicalId": "authUnivaFront"
@@ -45,7 +45,7 @@
         "Name": "S3Triggere26809e1-testtwo",
         "LambdaExecutionRole": "S3Triggere26809e1LambdaRolee26809e1-testtwo"
       },
-      "lastPushTimeStamp": "2021-01-22T05:53:05.557Z",
+      "lastPushTimeStamp": "2021-01-25T04:00:15.460Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/function/S3Triggere26809e1-cloudformation-template.json",
         "logicalId": "functionS3Triggere26809e1"
@@ -71,7 +71,7 @@
         "BucketName": "univa-frontddea0ec3db934773902f35abcf4195d2testtwo-testtwo",
         "Region": "ap-northeast-2"
       },
-      "lastPushTimeStamp": "2021-01-22T05:53:05.558Z",
+      "lastPushTimeStamp": "2021-01-25T04:00:15.462Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
         "logicalId": "storages3af9831ad"
@@ -104,11 +104,12 @@
         "GraphQLAPIEndpointOutput": "https://gw5v7cbnfjevjlqxdxy2dh7zsm.appsync-api.ap-northeast-2.amazonaws.com/graphql",
         "GraphQLAPIKeyOutput": "da2-kvh52ikakvfedfmnjepikui2va"
       },
-      "lastPushTimeStamp": "2021-01-22T05:53:05.559Z",
+      "lastPushTimeStamp": "2021-01-25T04:00:15.965Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-univa-front-testtwo-71229-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiunivagraphql"
-      }
+      },
+      "lastPushDirHash": "vX+zPn14qGApkG0igUxSTU375bo="
     }
   }
 }

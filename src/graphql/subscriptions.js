@@ -1,6 +1,21 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const onCreateMessageByChannelId = /* GraphQL */ `
+  subscription OnCreateMessageByChannelId($channelID: String) {
+    onCreateMessageByChannelID(channelID: $channelID) {
+      id
+      channelID
+      client
+      solver
+      author
+      body
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
 export const onCreateMessage = /* GraphQL */ `
   subscription OnCreateMessage {
     onCreateMessage {

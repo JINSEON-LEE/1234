@@ -133,3 +133,9 @@ type Message
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
 }
+
+
+type Subscription {
+  onCreateMessageByChannelID(channelID: String): Message
+    @aws_subscribe(mutations: ["createMessage"])
+}

@@ -99,6 +99,28 @@ type Message @aws_cognito_user_pools {
   owner: String
 }
 
+type Subscription {
+  onCreateMessageByChannelID(channelID: String): Message @aws_subscribe(mutations: ["createMessage"])
+  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
+  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
+  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
+  onCreateOrder(owner: String): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
+  onUpdateOrder(owner: String): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
+  onDeleteOrder(owner: String): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
+  onCreateReview: Review @aws_subscribe(mutations: ["createReview"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"]) @aws_api_key @aws_cognito_user_pools
+  onCreateProblem(owner: String): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
+  onUpdateProblem(owner: String): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
+  onDeleteProblem(owner: String): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
+  onCreateAnswer(client: String): Answer @aws_subscribe(mutations: ["createAnswer"]) @aws_cognito_user_pools
+  onUpdateAnswer(client: String): Answer @aws_subscribe(mutations: ["updateAnswer"]) @aws_cognito_user_pools
+  onDeleteAnswer(client: String): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
+  onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
+  onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
+  onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
+}
+
 enum ModelSortDirection {
   ASC
   DESC
@@ -303,27 +325,6 @@ input ModelOrderConditionInput {
   and: [ModelOrderConditionInput]
   or: [ModelOrderConditionInput]
   not: ModelOrderConditionInput
-}
-
-type Subscription {
-  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
-  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
-  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
-  onCreateOrder(owner: String): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
-  onUpdateOrder(owner: String): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
-  onDeleteOrder(owner: String): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
-  onCreateReview: Review @aws_subscribe(mutations: ["createReview"]) @aws_api_key @aws_cognito_user_pools
-  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"]) @aws_api_key @aws_cognito_user_pools
-  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"]) @aws_api_key @aws_cognito_user_pools
-  onCreateProblem(owner: String): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
-  onUpdateProblem(owner: String): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
-  onDeleteProblem(owner: String): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
-  onCreateAnswer(client: String): Answer @aws_subscribe(mutations: ["createAnswer"]) @aws_cognito_user_pools
-  onUpdateAnswer(client: String): Answer @aws_subscribe(mutations: ["updateAnswer"]) @aws_cognito_user_pools
-  onDeleteAnswer(client: String): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
-  onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
-  onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
-  onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
 }
 
 type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
