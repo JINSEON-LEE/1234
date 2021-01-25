@@ -30,6 +30,7 @@ type Review @aws_cognito_user_pools @aws_api_key {
 
 type Problem @aws_cognito_user_pools {
   id: ID!
+  index: Int!
   subject: Subject!
   image: String
   description: String
@@ -56,7 +57,6 @@ enum State {
   canceledWaiting
   canceled
   assignWaiting
-  solveWaiting
   solving
   mentoring
   finished
@@ -119,6 +119,18 @@ type Subscription {
   onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
   onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
   onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
+  onCreateStateChange(owner: String): StateChange @aws_subscribe(mutations: ["createStateChange"]) @aws_cognito_user_pools
+  onUpdateStateChange(owner: String): StateChange @aws_subscribe(mutations: ["updateStateChange"]) @aws_cognito_user_pools
+  onDeleteStateChange(owner: String): StateChange @aws_subscribe(mutations: ["deleteStateChange"]) @aws_cognito_user_pools
+}
+
+type StateChange @aws_cognito_user_pools {
+  id: ID!
+  orderId: [String]
+  wishState: State
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
 }
 
 enum ModelSortDirection {
@@ -248,6 +260,7 @@ type Query {
   searchReviews(filter: SearchableReviewFilterInput, sort: SearchableReviewSortInput, limit: Int, nextToken: String, from: Int): SearchableReviewConnection @aws_api_key @aws_cognito_user_pools
   listProblems(filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
   getProblem(id: ID!): Problem @aws_cognito_user_pools
+  problemByIndex(subject: Subject, index: ModelIntKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
   getAnswer(id: ID!): Answer @aws_cognito_user_pools
   listAnswers(filter: ModelAnswerFilterInput, limit: Int, nextToken: String): ModelAnswerConnection @aws_cognito_user_pools
   getSolver(id: ID!): Solver @aws_cognito_user_pools
@@ -256,6 +269,8 @@ type Query {
   getMessage(id: ID!): Message @aws_cognito_user_pools
   listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
   messagesByChannelID(channelID: String, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
+  getStateChange(id: ID!): StateChange @aws_cognito_user_pools
+  listStateChanges(filter: ModelStateChangeFilterInput, limit: Int, nextToken: String): ModelStateChangeConnection @aws_cognito_user_pools
 }
 
 input CreateOrderInput {
@@ -309,6 +324,9 @@ type Mutation {
   createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
   updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
   deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+  createStateChange(input: CreateStateChangeInput!, condition: ModelStateChangeConditionInput): StateChange @aws_cognito_user_pools
+  updateStateChange(input: UpdateStateChangeInput!, condition: ModelStateChangeConditionInput): StateChange @aws_cognito_user_pools
+  deleteStateChange(input: DeleteStateChangeInput!, condition: ModelStateChangeConditionInput): StateChange @aws_cognito_user_pools
 }
 
 input ModelOrderConditionInput {
@@ -391,6 +409,7 @@ input ModelSubjectInput {
 
 input ModelProblemFilterInput {
   id: ModelIDInput
+  index: ModelIntInput
   subject: ModelSubjectInput
   image: ModelStringInput
   description: ModelStringInput
@@ -402,6 +421,7 @@ input ModelProblemFilterInput {
 
 input CreateProblemInput {
   id: ID
+  index: Int!
   subject: Subject!
   image: String
   description: String
@@ -411,6 +431,7 @@ input CreateProblemInput {
 
 input UpdateProblemInput {
   id: ID!
+  index: Int
   subject: Subject
   image: String
   description: String
@@ -423,6 +444,7 @@ input DeleteProblemInput {
 }
 
 input ModelProblemConditionInput {
+  index: ModelIntInput
   subject: ModelSubjectInput
   image: ModelStringInput
   description: ModelStringInput
@@ -575,6 +597,51 @@ input ModelMessageConditionInput {
   and: [ModelMessageConditionInput]
   or: [ModelMessageConditionInput]
   not: ModelMessageConditionInput
+}
+
+type ModelStateChangeConnection @aws_cognito_user_pools {
+  items: [StateChange]
+  nextToken: String
+}
+
+input ModelStateChangeFilterInput {
+  orderId: ModelStringInput
+  wishState: ModelStateInput
+  and: [ModelStateChangeFilterInput]
+  or: [ModelStateChangeFilterInput]
+  not: ModelStateChangeFilterInput
+}
+
+input CreateStateChangeInput {
+  id: ID
+  orderId: [String]
+  wishState: State
+}
+
+input UpdateStateChangeInput {
+  orderId: [String]
+  wishState: State
+}
+
+input DeleteStateChangeInput {
+  id: ID
+}
+
+input ModelStateChangeConditionInput {
+  orderId: ModelStringInput
+  wishState: ModelStateInput
+  and: [ModelStateChangeConditionInput]
+  or: [ModelStateChangeConditionInput]
+  not: ModelStateChangeConditionInput
+}
+
+input ModelIntKeyConditionInput {
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
 }
 
 input ModelStringKeyConditionInput {

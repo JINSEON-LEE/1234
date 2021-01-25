@@ -172,6 +172,7 @@ export const listProblems = /* GraphQL */ `
     listProblems(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        index
         subject
         image
         description
@@ -187,6 +188,7 @@ export const getProblem = /* GraphQL */ `
   query GetProblem($id: ID!) {
     getProblem(id: $id) {
       id
+      index
       subject
       image
       description
@@ -214,6 +216,37 @@ export const getProblem = /* GraphQL */ `
     }
   }
 `;
+export const problemByIndex = /* GraphQL */ `
+  query ProblemByIndex(
+    $subject: Subject
+    $index: ModelIntKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelProblemFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    problemByIndex(
+      subject: $subject
+      index: $index
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        index
+        subject
+        image
+        description
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
 export const getAnswer = /* GraphQL */ `
   query GetAnswer($id: ID!) {
     getAnswer(id: $id) {
@@ -225,6 +258,7 @@ export const getAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -375,6 +409,37 @@ export const messagesByChannelId = /* GraphQL */ `
         solver
         author
         body
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+export const getStateChange = /* GraphQL */ `
+  query GetStateChange($id: ID!) {
+    getStateChange(id: $id) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const listStateChanges = /* GraphQL */ `
+  query ListStateChanges(
+    $filter: ModelStateChangeFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStateChanges(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        orderId
+        wishState
         createdAt
         updatedAt
         owner

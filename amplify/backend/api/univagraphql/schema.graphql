@@ -49,9 +49,11 @@ type Problem @model @auth(rules: [
 { allow: groups, groups: ["admin"] }
 { allow: owner , operations:[create, read] }
 { allow: groups, groups: ["solver"], operations:[read]}
-]){
+])
+@key(name: "byIndex", fields: ["subject", "index"], queryField: "problemByIndex"){
   id: ID!
-  subject: Subject!
+  index: Int!
+  subject: Subject! # hash key 의미 x
   image: String
   description: String
   order: Order @connection(name: "OrderProblems")
@@ -78,7 +80,6 @@ enum State {
   canceledWaiting # 풀이취소대기
   canceled # 풀이취소
   assignWaiting # 풀이자배정대기
-  solveWaiting # 문제풀이대기
   solving # 문제풀이중
   mentoring # 멘토링중
   finished # 완료
@@ -138,4 +139,13 @@ type Message
 type Subscription {
   onCreateMessageByChannelID(channelID: String): Message
     @aws_subscribe(mutations: ["createMessage"])
+}
+
+type StateChange @model 
+@auth(rules: [
+  { allow: owner}
+  { allow: groups, groups: ["admin"] }
+  ]){
+  orderId: [String]
+  wishState: State
 }

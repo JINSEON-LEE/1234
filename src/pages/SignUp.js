@@ -6,13 +6,12 @@ import {onAuthUIStateChange} from '@aws-amplify/ui-components';
 import AppAppBar from '../views/AppAppBar';
 import AppFooter from '../views/AppFooter';
 import {UnivaSignIn, UnivaSignUp} from '../views/SignInSignUp'
-import { Redirect, Link } from 'react-router-dom';
-import { useHistory } from "react-router-dom";
- 
-function SignIn(props) {
+
+
+function SignUp({history}) {
   const [authState, setAuthState] = React.useState();
   const [user, setUser] = React.useState();
-  let history = useHistory();
+
   React.useEffect(() => {
     onAuthUIStateChange((nextAuthState, authData) => {
       setAuthState(nextAuthState);
@@ -23,15 +22,17 @@ function SignIn(props) {
   return (
     <div>
       <AppAppBar isLogin={authState} />
-      { authState !== 'signedin' ? (
-      <AmplifyAuthenticator>
+      <AmplifyAuthenticator initialAuthState = "signup">
         <UnivaSignIn/>
         <UnivaSignUp/>
-      </AmplifyAuthenticator>) : <Redirect to="/"></Redirect>
-      }
+        { authState === "confirmSignUp"
+          ? history.goBack()
+          : null
+        }
+    </AmplifyAuthenticator>
       <AppFooter/>
     </div>
   );
 }
 
-export default withRoot(SignIn);
+export default withRoot(SignUp);

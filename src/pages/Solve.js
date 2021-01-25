@@ -9,10 +9,10 @@ import {
   withAuthenticator,
 } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components";
-import awsconfig from "./aws-exports";
-import { listProblems, searchOrders, listOrders } from "./graphql/queries";
+import awsconfig from "../aws-exports";
+import { listProblems, searchOrders, listOrders } from "../graphql/queries";
 
-import Typography from "./components/Typography";
+import Typography from "../components/Typography";
 import {
   Grid,
   Button,
@@ -40,22 +40,22 @@ import HelpIcon from "@material-ui/icons/Help";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-import ex2 from "./image/electro.png";
+import ex2 from "../image/electro.png";
 import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
 import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
-import withRoot from "./withRoot";
+import withRoot from "../withRoot";
 
-import AppAppBar from "./views/AppAppBar";
-import AppFooter from "./views/AppFooter";
-import SignIn from "./pages/SignIn.js";
+import AppAppBar from "../views/AppAppBar";
+import AppFooter from "../views/AppFooter";
+import SignIn from "./SignIn.js";
 import produce from "immer";
 import moment from "moment";
-import Chatting from "./pages/Chatting.js";
+import Chatting from "./Chatting.js";
 
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-import { createAnswer as createAnswerMutation } from "./graphql/mutations";
-import { solverBySolverName, } from "./graphql/queries";
+import { createAnswer as createAnswerMutation } from "../graphql/mutations";
+import { solverBySolverName, } from "../graphql/queries";
 Amplify.configure(awsconfig);
 const client = new AWSAppSyncClient({
   url: awsconfig.aws_appsync_graphqlEndpoint,
@@ -397,7 +397,7 @@ const Solve = () => {
 
   if (!orders) return <div>There isn't problem.</div>;
   if (problems.length === 0) return <div>IMAGE LOADING...</div>;
-  return (
+  return authState === AuthState.SignedIn && user ? (
     <div className="Solve">
       <React.Fragment>
         <AppAppBar isLogin={authState} />
@@ -735,6 +735,8 @@ const Solve = () => {
         <AppFooter />
       </React.Fragment>
     </div>
+  ) : (
+    <SignIn />
   )
 };
 

@@ -217,6 +217,14 @@
                         "AttributeType": "S"
                     },
                     {
+                        "AttributeName": "subject",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "index",
+                        "AttributeType": "N"
+                    },
+                    {
                         "AttributeName": "problemOrderId",
                         "AttributeType": "S"
                     }
@@ -270,6 +278,38 @@
                     ]
                 },
                 "GlobalSecondaryIndexes": [
+                    {
+                        "IndexName": "byIndex",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "subject",
+                                "KeyType": "HASH"
+                            },
+                            {
+                                "AttributeName": "index",
+                                "KeyType": "RANGE"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "Fn::If": [
+                                "ShouldUsePayPerRequestBilling",
+                                {
+                                    "Ref": "AWS::NoValue"
+                                },
+                                {
+                                    "ReadCapacityUnits": {
+                                        "Ref": "DynamoDBModelTableReadIOPS"
+                                    },
+                                    "WriteCapacityUnits": {
+                                        "Ref": "DynamoDBModelTableWriteIOPS"
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     {
                         "IndexName": "gsi-OrderProblems",
                         "KeySchema": [
@@ -814,6 +854,70 @@
                                     [
                                         "Mutation",
                                         "deleteProblem",
+                                        "res",
+                                        "vtl"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "QueryproblemByIndexResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Ref": "GetAttGraphQLAPIApiId"
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ProblemDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "problemByIndex",
+                "TypeName": "Query",
+                "RequestMappingTemplateS3Location": {
+                    "Fn::Sub": [
+                        "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                        {
+                            "S3DeploymentBucket": {
+                                "Ref": "S3DeploymentBucket"
+                            },
+                            "S3DeploymentRootKey": {
+                                "Ref": "S3DeploymentRootKey"
+                            },
+                            "ResolverFileName": {
+                                "Fn::Join": [
+                                    ".",
+                                    [
+                                        "Query",
+                                        "problemByIndex",
+                                        "req",
+                                        "vtl"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "ResponseMappingTemplateS3Location": {
+                    "Fn::Sub": [
+                        "s3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}",
+                        {
+                            "S3DeploymentBucket": {
+                                "Ref": "S3DeploymentBucket"
+                            },
+                            "S3DeploymentRootKey": {
+                                "Ref": "S3DeploymentRootKey"
+                            },
+                            "ResolverFileName": {
+                                "Fn::Join": [
+                                    ".",
+                                    [
+                                        "Query",
+                                        "problemByIndex",
                                         "res",
                                         "vtl"
                                     ]

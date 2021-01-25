@@ -209,6 +209,7 @@ export const onCreateProblem = /* GraphQL */ `
   subscription OnCreateProblem($owner: String) {
     onCreateProblem(owner: $owner) {
       id
+      index
       subject
       image
       description
@@ -240,6 +241,7 @@ export const onUpdateProblem = /* GraphQL */ `
   subscription OnUpdateProblem($owner: String) {
     onUpdateProblem(owner: $owner) {
       id
+      index
       subject
       image
       description
@@ -271,6 +273,7 @@ export const onDeleteProblem = /* GraphQL */ `
   subscription OnDeleteProblem($owner: String) {
     onDeleteProblem(owner: $owner) {
       id
+      index
       subject
       image
       description
@@ -309,6 +312,7 @@ export const onCreateAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -330,6 +334,7 @@ export const onUpdateAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -351,6 +356,7 @@ export const onDeleteAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -394,6 +400,42 @@ export const onDeleteSolver = /* GraphQL */ `
       orders
       createdAt
       updatedAt
+    }
+  }
+`;
+export const onCreateStateChange = /* GraphQL */ `
+  subscription OnCreateStateChange($owner: String) {
+    onCreateStateChange(owner: $owner) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateStateChange = /* GraphQL */ `
+  subscription OnUpdateStateChange($owner: String) {
+    onUpdateStateChange(owner: $owner) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteStateChange = /* GraphQL */ `
+  subscription OnDeleteStateChange($owner: String) {
+    onDeleteStateChange(owner: $owner) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
