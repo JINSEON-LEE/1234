@@ -436,4 +436,4 @@ const Mentoring = () => {
     <SignIn />
   );
 };
-export default withRoot(withAuthenticator(Mentoring));
+export default withRoot(Mentoring);

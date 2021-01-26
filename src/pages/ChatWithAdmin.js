@@ -88,4 +88,4 @@ const ChatWithAdmin = () => {
   );
 };
 
-export default withRoot(withAuthenticator(ChatWithAdmin));
+export default withRoot(ChatWithAdmin);

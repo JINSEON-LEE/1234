@@ -347,7 +347,25 @@ const Solve = () => {
         }
       }
     }
-    console.log(orders[selectedOrderIndex], "에 대한 state 변경 요청 생성 중(solving=>mentoring)");
+    
+    const RequestMutation = `mutation MyMutation($requestedState: State = mentoring, $orderId: String = "${orders[selectedOrderIndex]}") {
+      createChangerequest(input: {orderId: $orderId, requestedState: $requestedState}) {
+        requestedState
+        orderId
+        createdAt
+      }
+    }
+    `
+    try {
+      const data = await API.graphql({
+        query: RequestMutation,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      });
+      console.log(orders[selectedOrderIndex], "에 대한 state 변경 요청 생성(solving=>mentoring)");
+      console.log(data);
+    } catch (e) {
+      console.log("graphql error occurred. error message : ", e);
+    }
 
   }
 
@@ -734,4 +752,4 @@ const Solve = () => {
   );
 };
 
-export default withRoot(withAuthenticator(Solve));
+export default withRoot(Solve);
