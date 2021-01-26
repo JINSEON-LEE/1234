@@ -274,11 +274,8 @@ const Solve = () => {
       {},
       orders[selectedOrderIndex].problems.items[selectedProblemIndex]
     );
-<<<<<<< HEAD:src/Solve.js
 
-    let problem1 = Object.assign({}, orders[selectedOrderIndex].problems.items[selectedProblemIndex])
-=======
->>>>>>> 95884f96d2f9b30688afb8127e8b844cee42047b:src/pages/Solve.js
+    
     if (problem1.image) {
       const image = await Storage.get(problem1.image);
       problem1.image_url = image;
