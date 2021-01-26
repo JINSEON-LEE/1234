@@ -28,7 +28,7 @@ const ChatWithAdmin = () => {
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
   const [orderId, setOrderId] = useState(null);
-  const [viewChat, setViewChat] = useState(false);
+  const [viewChat, setViewChat] = useState(true);
 
   React.useLayoutEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -46,20 +46,20 @@ const ChatWithAdmin = () => {
       console.log(orderId)
   }, [orderId])
 
-  const handleChange = (event) => {
-    setOrderId(event.target.value);
-  };
+  // const handleChange = (event) => {
+  //   setOrderId(event.target.value);
+  // };
 
-  const handleSubmit = (event) => {
-      console.log(event)
-      setViewChat(true)
-  }
+  // const handleSubmit = (event) => {
+  //     console.log(event)
+  //     setViewChat(true)
+  // }
 
   return authState === AuthState.SignedIn && user ? (
     <div>
       <AppAppBar isLogin={authState} />
       <div>관리자와의 채팅</div>
-      <form onSubmit={handleSubmit}>
+      {/* <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="message"
@@ -68,7 +68,7 @@ const ChatWithAdmin = () => {
           onChange={handleChange}
         />
         <button type="button" onClick={handleSubmit}>확인</button>
-      </form>
+      </form> */}
 
       {viewChat === false ? (
         <div>
@@ -88,4 +88,4 @@ const ChatWithAdmin = () => {
   );
 };
 
-export default withRoot(withAuthenticator(ChatWithAdmin));
+export default withRoot(ChatWithAdmin);
