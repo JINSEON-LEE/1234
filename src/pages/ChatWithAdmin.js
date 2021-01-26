@@ -27,6 +27,8 @@ const client = new AWSAppSyncClient({
 const ChatWithAdmin = () => {
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
+  const [orderId, setOrderId] = useState(null);
+  const [viewChat, setViewChat] = useState(false);
 
   React.useLayoutEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -40,16 +42,45 @@ const ChatWithAdmin = () => {
     });
   }, []);
 
+  React.useEffect(()=>{
+      console.log(orderId)
+  }, [orderId])
+
+  const handleChange = (event) => {
+    setOrderId(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+      console.log(event)
+      setViewChat(true)
+  }
+
   return authState === AuthState.SignedIn && user ? (
     <div>
       <AppAppBar isLogin={authState} />
       <div>관리자와의 채팅</div>
-      <div>?: 주문에 대한 정확한 정보를 말해주세요.(id) </div>
-      <Chatting
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="message"
+          placeholder="관리자와의 채팅을 원하는 orderId를 적으세요."
+          value={orderId}
+          onChange={handleChange}
+        />
+        <button type="button" onClick={handleSubmit}>확인</button>
+      </form>
+
+      {viewChat === false ? (
+        <div>
+            채팅이 없습니다.
+        </div>
+      ) : (
+        <Chatting
         solver={user.username}
         client={"42c5798e-d5bf-4ca8-9f9b-ddf7dd6ae36f"}
-        channelID={"361bdc50-d394-48ec-871e-5c2b622a3804"} // 임시 배정
-      />
+        channelID={orderId}/>
+      )}
+
       <AppFooter />
     </div>
   ) : (

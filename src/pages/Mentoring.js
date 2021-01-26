@@ -27,7 +27,7 @@ import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AppAppBar from "../views/AppAppBar";
 import AppFooter from "../views/AppFooter";
 import SignIn from "./SignIn";
-import Chatting from "./Chatting"
+import Chatting from "./Chatting";
 
 Amplify.configure(awsconfig);
 
@@ -43,76 +43,76 @@ const client = new AWSAppSyncClient({
 });
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      color: theme.palette.primary,
-      alignItems: "center",
-      position: "relative",
-    },
-    form: {
-      marginTop: theme.spacing(6),
-    },
-    number: {
-      fontSize: 30,
-      color: theme.palette.secondary.light,
-      marginLeft: theme.spacing(2),
-    },
-    content: {
-      fontSize: 24,
-      marginLeft: theme.spacing(1),
-    },
-    inputbox: {
-      marginTop: theme.spacing(5),
-      marginBottom: theme.spacing(2),
-    },
-    popbox: {
-      fontSize: 14,
-      backgroundColor: "#F3F3F3",
-      padding: theme.spacing(2),
-    },
-    searchbar: {
-      padding: "2px 4px",
-      display: "flex",
-      alignItems: "center",
-      width: 742,
-      marginTop: theme.spacing(5),
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    inputbox: {
-      marginTop: theme.spacing(5),
-      marginBottom: theme.spacing(2),
-    },
-    plusbutton: {
-      marginBottom: theme.spacing(1.6),
-    },
-    iconButton: {
-      padding: 10,
-    },
-    method: {
-      textAlign: "center",
-    },
-    red: {
-      color: "red",
-      fontSize: 15,
-    },
-    table: {
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(2),
-      width: "90%",
-    },
-  }));
-  
-  const StyledTableCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: theme.palette.secondary.light,
-      color: theme.palette.common.black,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
+  root: {
+    color: theme.palette.primary,
+    alignItems: "center",
+    position: "relative",
+  },
+  form: {
+    marginTop: theme.spacing(6),
+  },
+  number: {
+    fontSize: 30,
+    color: theme.palette.secondary.light,
+    marginLeft: theme.spacing(2),
+  },
+  content: {
+    fontSize: 24,
+    marginLeft: theme.spacing(1),
+  },
+  inputbox: {
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(2),
+  },
+  popbox: {
+    fontSize: 14,
+    backgroundColor: "#F3F3F3",
+    padding: theme.spacing(2),
+  },
+  searchbar: {
+    padding: "2px 4px",
+    display: "flex",
+    alignItems: "center",
+    width: 742,
+    marginTop: theme.spacing(5),
+  },
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+  },
+  inputbox: {
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(2),
+  },
+  plusbutton: {
+    marginBottom: theme.spacing(1.6),
+  },
+  iconButton: {
+    padding: 10,
+  },
+  method: {
+    textAlign: "center",
+  },
+  red: {
+    color: "red",
+    fontSize: 15,
+  },
+  table: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(2),
+    width: "90%",
+  },
+}));
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.secondary.light,
+    color: theme.palette.common.black,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
 
 const Mentoring = () => {
   const classes = useStyles();
@@ -207,7 +207,14 @@ const Mentoring = () => {
     setSelectedProblemIndex(selectedProblemIndex + 1);
   }
 
-  if (!orders.length) return <div>There isn't mentoring request.</div>;
+  if (!orders.length)
+    return (
+      <div>
+        <AppAppBar isLogin={authState} />
+        <div>There isn't mentoring request.</div>
+        <AppFooter />
+      </div>
+    );
   return authState === AuthState.SignedIn && user ? (
     <div className="Solve">
       <React.Fragment>
@@ -236,9 +243,7 @@ const Mentoring = () => {
                     <TableRow>
                       <StyledTableCell align="center">번호</StyledTableCell>
                       <StyledTableCell align="center">마감시간</StyledTableCell>
-                      <StyledTableCell align="center">
-                        문제수
-                      </StyledTableCell>
+                      <StyledTableCell align="center">문제수</StyledTableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -384,8 +389,7 @@ const Mentoring = () => {
                   >
                     다음문제
                   </Button>
-                  <Grid direction="column" alignItems="center">
-                  </Grid>
+                  <Grid direction="column" alignItems="center"></Grid>
                 </Typography>
               </Box>
             </React.Fragment>
