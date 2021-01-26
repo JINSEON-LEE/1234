@@ -160,9 +160,11 @@ function AppAppBar(props) {
       <Drawer open={state.toggle} anchor='right'>
         <MenuItem onClick={handleDrawerToggle}>
           <List>
-            <ListItemLink href="/solve">
+          
+            <ListItem button onClißßck = {() => {history.push('/solve');}}>
               <ListItemText primary='문제풀이'/>
-            </ListItemLink>
+            </ListItem>
+
             <ListItem button onClick = {() => {history.push('/mentoring');}} >
               <ListItemText primary='멘토링'/>
             </ListItem>
