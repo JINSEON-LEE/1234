@@ -2,7 +2,7 @@
   "providers": [
     "awscloudformation"
   ],
-  "projectName": "Univa-Solver",
+  "projectName": "Univa-Admin",
   "version": "3.0",
   "frontend": "javascript",
   "javascript": {

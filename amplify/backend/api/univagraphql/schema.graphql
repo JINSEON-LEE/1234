@@ -80,6 +80,7 @@ enum State {
   canceledWaiting # 풀이취소대기
   canceled # 풀이취소
   assignWaiting # 풀이자배정대기
+  solveWaiting # 문제풀이대기
   solving # 문제풀이중
   mentoring # 멘토링중
   finished # 완료
@@ -139,13 +140,4 @@ type Message
 type Subscription {
   onCreateMessageByChannelID(channelID: String): Message
     @aws_subscribe(mutations: ["createMessage"])
-}
-
-type StateChange @model 
-@auth(rules: [
-  { allow: owner}
-  { allow: groups, groups: ["admin"] }
-  ]){
-  orderId: [String]
-  wishState: State
 }
