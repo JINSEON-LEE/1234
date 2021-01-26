@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Solve from "./pages/Solve";
 import Mentoring from "./pages/Mentoring";
 import ChatWithAdmin from "./pages/ChatWithAdmin";
