@@ -170,6 +170,7 @@ export const createProblem = /* GraphQL */ `
   ) {
     createProblem(input: $input, condition: $condition) {
       id
+      index
       subject
       image
       description
@@ -204,6 +205,7 @@ export const updateProblem = /* GraphQL */ `
   ) {
     updateProblem(input: $input, condition: $condition) {
       id
+      index
       subject
       image
       description
@@ -238,6 +240,7 @@ export const deleteProblem = /* GraphQL */ `
   ) {
     deleteProblem(input: $input, condition: $condition) {
       id
+      index
       subject
       image
       description
@@ -279,6 +282,7 @@ export const createAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -303,6 +307,7 @@ export const updateAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -327,6 +332,7 @@ export const deleteAnswer = /* GraphQL */ `
       updatedAt
       problem {
         id
+        index
         subject
         image
         description
@@ -430,6 +436,51 @@ export const deleteMessage = /* GraphQL */ `
       solver
       author
       body
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const createStateChange = /* GraphQL */ `
+  mutation CreateStateChange(
+    $input: CreateStateChangeInput!
+    $condition: ModelStateChangeConditionInput
+  ) {
+    createStateChange(input: $input, condition: $condition) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const updateStateChange = /* GraphQL */ `
+  mutation UpdateStateChange(
+    $input: UpdateStateChangeInput!
+    $condition: ModelStateChangeConditionInput
+  ) {
+    updateStateChange(input: $input, condition: $condition) {
+      id
+      orderId
+      wishState
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const deleteStateChange = /* GraphQL */ `
+  mutation DeleteStateChange(
+    $input: DeleteStateChangeInput!
+    $condition: ModelStateChangeConditionInput
+  ) {
+    deleteStateChange(input: $input, condition: $condition) {
+      id
+      orderId
+      wishState
       createdAt
       updatedAt
       owner

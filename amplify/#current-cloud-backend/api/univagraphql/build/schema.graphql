@@ -1,0 +1,739 @@
+type Order @aws_cognito_user_pools {
+  id: ID!
+  username: String!
+  subject: String!
+  option1: Boolean!
+  option2: Boolean!
+  option3: Boolean!
+  deadline: AWSDateTime!
+  state: State!
+  pay: Int
+  message: Message
+  createdAt: AWSDateTime!
+  solver: String
+  updatedAt: AWSDateTime!
+  owner: String
+  problems(filter: ModelProblemFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
+}
+
+type Review @aws_cognito_user_pools @aws_api_key {
+  id: ID!
+  username: String!
+  subject: String!
+  rating: Float
+  review: String
+  order: String!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Problem @aws_cognito_user_pools {
+  id: ID!
+  index: Int!
+  subject: Subject!
+  image: String
+  description: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  order: Order @aws_cognito_user_pools
+  owner: String
+  answers(filter: ModelAnswerFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelAnswerConnection @aws_cognito_user_pools
+}
+
+type Answer @aws_cognito_user_pools {
+  id: ID!
+  image: String
+  description: String
+  client: String
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  problem: Problem @aws_cognito_user_pools
+}
+
+enum State {
+  payWaiting
+  priceWaiting
+  canceledWaiting
+  canceled
+  assignWaiting
+  solveWaiting
+  solving
+  mentoring
+  finished
+}
+
+enum Subject {
+  classicalMechanics
+  electromagnetism
+  thermodynamics
+  linearAlgebra
+  calculus
+  engineeringMathematics
+  chemistry
+  organicChemistry
+}
+
+enum SolverState {
+  wake
+  sleep
+}
+
+type Solver @aws_cognito_user_pools {
+  id: ID!
+  solver: String!
+  state: SolverState!
+  orders: [String]
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type Message @aws_cognito_user_pools {
+  id: ID!
+  channelID: String!
+  client: String!
+  solver: String!
+  author: String!
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+  owner: String
+}
+
+type Subscription {
+  onCreateMessageByChannelID(channelID: String): Message @aws_subscribe(mutations: ["createMessage"])
+  onCreateMessage: Message @aws_subscribe(mutations: ["createMessage"])
+  onUpdateMessage: Message @aws_subscribe(mutations: ["updateMessage"])
+  onDeleteMessage: Message @aws_subscribe(mutations: ["deleteMessage"])
+  onCreateOrder(owner: String): Order @aws_subscribe(mutations: ["createOrder"]) @aws_cognito_user_pools
+  onUpdateOrder(owner: String): Order @aws_subscribe(mutations: ["updateOrder"]) @aws_cognito_user_pools
+  onDeleteOrder(owner: String): Order @aws_subscribe(mutations: ["deleteOrder"]) @aws_cognito_user_pools
+  onCreateReview: Review @aws_subscribe(mutations: ["createReview"]) @aws_api_key @aws_cognito_user_pools
+  onUpdateReview: Review @aws_subscribe(mutations: ["updateReview"]) @aws_api_key @aws_cognito_user_pools
+  onDeleteReview: Review @aws_subscribe(mutations: ["deleteReview"]) @aws_api_key @aws_cognito_user_pools
+  onCreateProblem(owner: String): Problem @aws_subscribe(mutations: ["createProblem"]) @aws_cognito_user_pools
+  onUpdateProblem(owner: String): Problem @aws_subscribe(mutations: ["updateProblem"]) @aws_cognito_user_pools
+  onDeleteProblem(owner: String): Problem @aws_subscribe(mutations: ["deleteProblem"]) @aws_cognito_user_pools
+  onCreateAnswer(client: String): Answer @aws_subscribe(mutations: ["createAnswer"]) @aws_cognito_user_pools
+  onUpdateAnswer(client: String): Answer @aws_subscribe(mutations: ["updateAnswer"]) @aws_cognito_user_pools
+  onDeleteAnswer(client: String): Answer @aws_subscribe(mutations: ["deleteAnswer"]) @aws_cognito_user_pools
+  onCreateSolver(solver: String): Solver @aws_subscribe(mutations: ["createSolver"]) @aws_cognito_user_pools
+  onUpdateSolver(solver: String): Solver @aws_subscribe(mutations: ["updateSolver"]) @aws_cognito_user_pools
+  onDeleteSolver(solver: String): Solver @aws_subscribe(mutations: ["deleteSolver"]) @aws_cognito_user_pools
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelOrderConnection @aws_cognito_user_pools {
+  items: [Order]
+  nextToken: String
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelStateInput {
+  eq: State
+  ne: State
+}
+
+input ModelOrderFilterInput {
+  id: ModelIDInput
+  username: ModelStringInput
+  subject: ModelStringInput
+  option1: ModelBooleanInput
+  option2: ModelBooleanInput
+  option3: ModelBooleanInput
+  deadline: ModelStringInput
+  state: ModelStateInput
+  pay: ModelIntInput
+  createdAt: ModelStringInput
+  solver: ModelStringInput
+  and: [ModelOrderFilterInput]
+  or: [ModelOrderFilterInput]
+  not: ModelOrderFilterInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+type Query {
+  listOrders(filter: ModelOrderFilterInput, limit: Int, nextToken: String): ModelOrderConnection @aws_cognito_user_pools
+  getOrder(id: ID!): Order @aws_cognito_user_pools
+  searchOrders(filter: SearchableOrderFilterInput, sort: SearchableOrderSortInput, limit: Int, nextToken: String, from: Int): SearchableOrderConnection @aws_cognito_user_pools
+  getReview(id: ID!): Review @aws_api_key @aws_cognito_user_pools
+  listReviews(filter: ModelReviewFilterInput, limit: Int, nextToken: String): ModelReviewConnection @aws_api_key @aws_cognito_user_pools
+  searchReviews(filter: SearchableReviewFilterInput, sort: SearchableReviewSortInput, limit: Int, nextToken: String, from: Int): SearchableReviewConnection @aws_api_key @aws_cognito_user_pools
+  listProblems(filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
+  getProblem(id: ID!): Problem @aws_cognito_user_pools
+  problemByIndex(subject: Subject, index: ModelIntKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelProblemFilterInput, limit: Int, nextToken: String): ModelProblemConnection @aws_cognito_user_pools
+  getAnswer(id: ID!): Answer @aws_cognito_user_pools
+  listAnswers(filter: ModelAnswerFilterInput, limit: Int, nextToken: String): ModelAnswerConnection @aws_cognito_user_pools
+  getSolver(id: ID!): Solver @aws_cognito_user_pools
+  listSolvers(filter: ModelSolverFilterInput, limit: Int, nextToken: String): ModelSolverConnection @aws_cognito_user_pools
+  solverBySolverName(solver: String, state: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelSolverFilterInput, limit: Int, nextToken: String): ModelSolverConnection @aws_cognito_user_pools
+  getMessage(id: ID!): Message @aws_cognito_user_pools
+  listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
+  messagesByChannelID(channelID: String, createdAt: ModelStringKeyConditionInput, sortDirection: ModelSortDirection, filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection @aws_cognito_user_pools
+}
+
+input CreateOrderInput {
+  id: ID
+  username: String!
+  subject: String!
+  option1: Boolean!
+  option2: Boolean!
+  option3: Boolean!
+  deadline: AWSDateTime!
+  state: State!
+  pay: Int
+  createdAt: AWSDateTime
+  solver: String
+}
+
+input UpdateOrderInput {
+  id: ID!
+  username: String
+  subject: String
+  option1: Boolean
+  option2: Boolean
+  option3: Boolean
+  deadline: AWSDateTime
+  state: State
+  pay: Int
+  createdAt: AWSDateTime
+  solver: String
+}
+
+input DeleteOrderInput {
+  id: ID
+}
+
+type Mutation {
+  createOrder(input: CreateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
+  updateOrder(input: UpdateOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
+  deleteOrder(input: DeleteOrderInput!, condition: ModelOrderConditionInput): Order @aws_cognito_user_pools
+  createReview(input: CreateReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
+  updateReview(input: UpdateReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
+  deleteReview(input: DeleteReviewInput!, condition: ModelReviewConditionInput): Review @aws_cognito_user_pools
+  createProblem(input: CreateProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
+  updateProblem(input: UpdateProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
+  deleteProblem(input: DeleteProblemInput!, condition: ModelProblemConditionInput): Problem @aws_cognito_user_pools
+  createAnswer(input: CreateAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
+  updateAnswer(input: UpdateAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
+  deleteAnswer(input: DeleteAnswerInput!, condition: ModelAnswerConditionInput): Answer @aws_cognito_user_pools
+  createSolver(input: CreateSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  updateSolver(input: UpdateSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  deleteSolver(input: DeleteSolverInput!, condition: ModelSolverConditionInput): Solver @aws_cognito_user_pools
+  createMessage(input: CreateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+  updateMessage(input: UpdateMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+  deleteMessage(input: DeleteMessageInput!, condition: ModelMessageConditionInput): Message @aws_cognito_user_pools
+}
+
+input ModelOrderConditionInput {
+  username: ModelStringInput
+  subject: ModelStringInput
+  option1: ModelBooleanInput
+  option2: ModelBooleanInput
+  option3: ModelBooleanInput
+  deadline: ModelStringInput
+  state: ModelStateInput
+  pay: ModelIntInput
+  createdAt: ModelStringInput
+  solver: ModelStringInput
+  and: [ModelOrderConditionInput]
+  or: [ModelOrderConditionInput]
+  not: ModelOrderConditionInput
+}
+
+type ModelReviewConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Review]
+  nextToken: String
+}
+
+input ModelReviewFilterInput {
+  username: ModelStringInput
+  subject: ModelStringInput
+  rating: ModelFloatInput
+  review: ModelStringInput
+  order: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelReviewFilterInput]
+  or: [ModelReviewFilterInput]
+  not: ModelReviewFilterInput
+}
+
+input CreateReviewInput {
+  id: ID
+  username: String!
+  subject: String!
+  rating: Float
+  review: String
+  order: String!
+  createdAt: AWSDateTime
+}
+
+input UpdateReviewInput {
+  username: String
+  subject: String
+  rating: Float
+  review: String
+  order: String
+  createdAt: AWSDateTime
+}
+
+input DeleteReviewInput {
+  id: ID
+}
+
+input ModelReviewConditionInput {
+  username: ModelStringInput
+  subject: ModelStringInput
+  rating: ModelFloatInput
+  review: ModelStringInput
+  order: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelReviewConditionInput]
+  or: [ModelReviewConditionInput]
+  not: ModelReviewConditionInput
+}
+
+type ModelProblemConnection @aws_cognito_user_pools {
+  items: [Problem]
+  nextToken: String
+}
+
+input ModelSubjectInput {
+  eq: Subject
+  ne: Subject
+}
+
+input ModelProblemFilterInput {
+  id: ModelIDInput
+  index: ModelIntInput
+  subject: ModelSubjectInput
+  image: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelProblemFilterInput]
+  or: [ModelProblemFilterInput]
+  not: ModelProblemFilterInput
+}
+
+input CreateProblemInput {
+  id: ID
+  index: Int!
+  subject: Subject!
+  image: String
+  description: String
+  createdAt: AWSDateTime
+  problemOrderId: ID
+}
+
+input UpdateProblemInput {
+  id: ID!
+  index: Int
+  subject: Subject
+  image: String
+  description: String
+  createdAt: AWSDateTime
+  problemOrderId: ID
+}
+
+input DeleteProblemInput {
+  id: ID
+}
+
+input ModelProblemConditionInput {
+  index: ModelIntInput
+  subject: ModelSubjectInput
+  image: ModelStringInput
+  description: ModelStringInput
+  createdAt: ModelStringInput
+  and: [ModelProblemConditionInput]
+  or: [ModelProblemConditionInput]
+  not: ModelProblemConditionInput
+}
+
+type ModelAnswerConnection @aws_cognito_user_pools {
+  items: [Answer]
+  nextToken: String
+}
+
+input ModelAnswerFilterInput {
+  id: ModelIDInput
+  image: ModelStringInput
+  description: ModelStringInput
+  client: ModelStringInput
+  and: [ModelAnswerFilterInput]
+  or: [ModelAnswerFilterInput]
+  not: ModelAnswerFilterInput
+}
+
+input CreateAnswerInput {
+  id: ID
+  image: String
+  description: String
+  client: String
+  answerProblemId: ID
+}
+
+input UpdateAnswerInput {
+  id: ID!
+  image: String
+  description: String
+  client: String
+  answerProblemId: ID
+}
+
+input DeleteAnswerInput {
+  id: ID
+}
+
+input ModelAnswerConditionInput {
+  image: ModelStringInput
+  description: ModelStringInput
+  and: [ModelAnswerConditionInput]
+  or: [ModelAnswerConditionInput]
+  not: ModelAnswerConditionInput
+}
+
+type ModelSolverConnection @aws_cognito_user_pools {
+  items: [Solver]
+  nextToken: String
+}
+
+input ModelSolverStateInput {
+  eq: SolverState
+  ne: SolverState
+}
+
+input ModelSolverFilterInput {
+  id: ModelIDInput
+  solver: ModelStringInput
+  state: ModelSolverStateInput
+  orders: ModelStringInput
+  and: [ModelSolverFilterInput]
+  or: [ModelSolverFilterInput]
+  not: ModelSolverFilterInput
+}
+
+input CreateSolverInput {
+  id: ID
+  solver: String!
+  state: SolverState!
+  orders: [String]
+}
+
+input UpdateSolverInput {
+  id: ID!
+  solver: String
+  state: SolverState
+  orders: [String]
+}
+
+input DeleteSolverInput {
+  id: ID
+}
+
+input ModelSolverConditionInput {
+  state: ModelSolverStateInput
+  orders: ModelStringInput
+  and: [ModelSolverConditionInput]
+  or: [ModelSolverConditionInput]
+  not: ModelSolverConditionInput
+}
+
+type ModelMessageConnection @aws_cognito_user_pools {
+  items: [Message]
+  nextToken: String
+}
+
+input ModelMessageFilterInput {
+  id: ModelIDInput
+  channelID: ModelStringInput
+  client: ModelStringInput
+  solver: ModelStringInput
+  author: ModelStringInput
+  body: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMessageFilterInput]
+  or: [ModelMessageFilterInput]
+  not: ModelMessageFilterInput
+}
+
+input CreateMessageInput {
+  id: ID
+  channelID: String!
+  client: String!
+  solver: String!
+  author: String!
+  body: String!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateMessageInput {
+  id: ID!
+  channelID: String
+  client: String
+  solver: String
+  author: String
+  body: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteMessageInput {
+  id: ID
+}
+
+input ModelMessageConditionInput {
+  channelID: ModelStringInput
+  author: ModelStringInput
+  body: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelMessageConditionInput]
+  or: [ModelMessageConditionInput]
+  not: ModelMessageConditionInput
+}
+
+input ModelIntKeyConditionInput {
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+input ModelStringKeyConditionInput {
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  between: [String]
+  beginsWith: String
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableOrderFilterInput {
+  id: SearchableIDFilterInput
+  username: SearchableStringFilterInput
+  subject: SearchableStringFilterInput
+  option1: SearchableBooleanFilterInput
+  option2: SearchableBooleanFilterInput
+  option3: SearchableBooleanFilterInput
+  deadline: SearchableStringFilterInput
+  pay: SearchableIntFilterInput
+  createdAt: SearchableStringFilterInput
+  solver: SearchableStringFilterInput
+  and: [SearchableOrderFilterInput]
+  or: [SearchableOrderFilterInput]
+  not: SearchableOrderFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableOrderSortableFields {
+  id
+  username
+  subject
+  option1
+  option2
+  option3
+  deadline
+  pay
+  createdAt
+  solver
+}
+
+input SearchableOrderSortInput {
+  field: SearchableOrderSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableOrderConnection @aws_cognito_user_pools {
+  items: [Order]
+  nextToken: String
+  total: Int
+}
+
+input SearchableReviewFilterInput {
+  username: SearchableStringFilterInput
+  subject: SearchableStringFilterInput
+  rating: SearchableFloatFilterInput
+  review: SearchableStringFilterInput
+  order: SearchableStringFilterInput
+  createdAt: SearchableStringFilterInput
+  and: [SearchableReviewFilterInput]
+  or: [SearchableReviewFilterInput]
+  not: SearchableReviewFilterInput
+}
+
+enum SearchableReviewSortableFields {
+  username
+  subject
+  rating
+  review
+  order
+  createdAt
+}
+
+input SearchableReviewSortInput {
+  field: SearchableReviewSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableReviewConnection @aws_api_key @aws_cognito_user_pools {
+  items: [Review]
+  nextToken: String
+  total: Int
+}

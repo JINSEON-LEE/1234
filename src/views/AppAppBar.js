@@ -8,8 +8,7 @@ import AppBarList from '../components/AppBarList';
 import Toolbar, { styles as toolbarStyles } from '../components/Toolbar';
 import logo from '../image/logo.png';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useLocation, useHistory} from 'react-router-dom';
-import { Auth } from 'aws-amplify';
+import { useLocation, useHistory} from 'react-router-dom'
 
 
 const styles = (theme) => ({
@@ -54,7 +53,7 @@ const styles = (theme) => ({
     },
   },
   linkSecondary: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.primary.main,
   },
   nav: {
     marginRight: 'auto',
@@ -70,6 +69,7 @@ function ListItemLink(props) {
 
 
 function AppAppBar(props) {
+  const location = useLocation();
   const { classes } = props;
   let history = useHistory();
 
@@ -89,36 +89,27 @@ function AppAppBar(props) {
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/FAQ/"
+            href="/solve"
           >
-            {'이용방법'}
+            {'문제풀이'}
           </Link>
           <Link
             variant="h4"
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/ask"
+            href="/mentoring"
           >
-            {'질문하기'}
+            {'멘토링'}
           </Link>
           <Link
             variant="h4"
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/list"
+            href="/chatwithadmin"
           >
-            {'내 질문'}
-          </Link>
-          <Link
-            variant="h4"
-            underline="none"
-            color="inherit"
-            className={classes.tool}
-            href="/review"
-          >
-            {'이용후기'}
+            {'관리자와의 채팅'}
           </Link>
           <div className={classes.right}>
             {console.log(props.isLogin)}
@@ -142,7 +133,7 @@ function AppAppBar(props) {
                   underline="none"
                   className={classes.rightLink}
                   href="/sign-in/"
-                  path = "/"
+                  path = {location.pathname}
                 >
                   {'로그인'}
                 </Link>
@@ -169,24 +160,31 @@ function AppAppBar(props) {
       <Drawer open={state.toggle} anchor='right'>
         <MenuItem onClick={handleDrawerToggle}>
           <List>
-            <ListItemLink href="/FAQ/">
-              <ListItemText primary='이용방법'/>
+            <ListItemLink href="/solve">
+              <ListItemText primary='문제풀이'/>
             </ListItemLink>
-            <ListItem button onClick = {() => {history.push('/ask');}} >
-              <ListItemText primary='질문하기'/>
+            <ListItem button onClick = {() => {history.push('/mentoring');}} >
+              <ListItemText primary='멘토링'/>
             </ListItem>
-            <ListItem button onClick = {() => {history.push('/list');}} >
-              <ListItemText primary='내 질문'/>
+            <ListItem button onClick = {() => {history.push('/chatwithadmin');}} >
+              <ListItemText primary='관리자와의 채팅'/>
             </ListItem>
-            <ListItem button>
-              <ListItemText primary='이용후기'/>
-            </ListItem>
-            <ListItem button onClick = {() => {history.push('/sign-in');}} >
-              <ListItemText primary='로그인'/>
-            </ListItem>
-            <ListItem button onClick = {() => {history.push('/sign-up');}} >
-              <ListItemText primary='회원가입'/>
-            </ListItem>
+            {props.isLogin === "signedin"
+              ? (
+              <ListItem button onClick = {() => {history.push('/sign-out');}} >
+                <ListItemText primary='로그아웃'/>
+              </ListItem>
+              ) : (
+                <div>
+                  <ListItem button onClick = {() => {history.push('/sign-in');}} >
+                    <ListItemText primary='로그인'/>
+                  </ListItem>
+                  <ListItem button onClick = {() => {history.push('/sign-up');}} >
+                    <ListItemText primary='회원가입'/>
+                  </ListItem>
+                </div>
+              )
+            }
           </List>
         </MenuItem>
       </Drawer>

@@ -1,62 +1,44 @@
 import "./Solve.css";
 import React, { useState, useEffect } from "react";
 import { API, Storage, Amplify, Auth, graphqlOperation } from "aws-amplify";
-import {
-  AmplifyAuthenticator,
-  AmplifySignOut,
-  AmplifySignIn,
-  AmplifySignUp,
-  withAuthenticator,
-} from "@aws-amplify/ui-react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components";
-import awsconfig from "./aws-exports";
-import { listProblems, searchOrders, listOrders } from "./graphql/queries";
+import awsconfig from "../aws-exports";
 
-import Typography from "./components/Typography";
+import Typography from "../components/Typography";
 import {
   Grid,
   Button,
   Box,
-  List,
   ListItem,
-  ListItemText,
   Divider,
   Container,
-  Paper,
   IconButton,
-  InputBase,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import HelpIcon from "@material-ui/icons/Help";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-import ex2 from "./image/electro.png";
-import ArrowBackIosOutlinedIcon from "@material-ui/icons/ArrowBackIosOutlined";
+import ex2 from "../image/electro.png";
 import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
-import withRoot from "./withRoot";
+import withRoot from "../withRoot";
 
-import AppAppBar from "./views/AppAppBar";
-import AppFooter from "./views/AppFooter";
-import SignIn from "./pages/SignIn.js";
+import AppAppBar from "../views/AppAppBar";
+import AppFooter from "../views/AppFooter";
+import SignIn from "./SignIn.js";
 import produce from "immer";
-import moment from "moment";
-import Chatting from "./pages/Chatting.js";
+import Chatting from "./Chatting.js";
 
 import AWSAppSyncClient, { AUTH_TYPE } from "aws-appsync";
 
-import { createAnswer as createAnswerMutation } from "./graphql/mutations";
-import { solverBySolverName, } from "./graphql/queries";
+import { createAnswer as createAnswerMutation } from "../graphql/mutations";
+
 Amplify.configure(awsconfig);
+
 const client = new AWSAppSyncClient({
   url: awsconfig.aws_appsync_graphqlEndpoint,
   region: awsconfig.aws_appsync_region,
@@ -157,7 +139,9 @@ const Solve = () => {
   const [solutionForm, setSolutionForm] = useState([]);
   const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
-  const [answeredOrderId, setAnsweredOrderId] = useState(["e38c6f1d-1dfa-47b7-8557-3c814f158250"])
+  const [answeredOrderId, setAnsweredOrderId] = useState([
+    "e38c6f1d-1dfa-47b7-8557-3c814f158250",
+  ]);
 
   const handleListItemClick = (event, index) => {
     let lastSelectedOrderIndex = selectedOrderIndex;
@@ -167,9 +151,9 @@ const Solve = () => {
     setViewSol(false);
     if (index !== lastSelectedOrderIndex) {
       setProblems([]);
-      let solutionForm1 = []
+      let solutionForm1 = [];
       for (let i = 0; i < orders[index].problems.items.length; i++) {
-        solutionForm1.push(initialSolutionForm)
+        solutionForm1.push(initialSolutionForm);
       }
       console.log(solutionForm1);
       setSolutionForm(solutionForm1);
@@ -197,7 +181,7 @@ const Solve = () => {
   }, []);
 
   React.useLayoutEffect(() => {
-    console.log(answeredOrderId)
+    console.log(answeredOrderId);
     fetchFirst();
   }, [authState, answeredOrderId]);
 
@@ -232,7 +216,7 @@ const Solve = () => {
   async function fetchOrders() {
     console.log("fetch assigned orders");
     const username = await nowAuth().catch((err) => console.log(err));
-    console.log('username', username)
+    console.log("username", username);
 
     const Orderwithprob = `query MyQuery($eq: String = "${username}", $eq1: State = ${"solving"}) {
       listOrders(filter: {solver: {eq: $eq}, state: {eq: $eq1}}) {
@@ -254,15 +238,15 @@ const Solve = () => {
     `;
     const apiData = await API.graphql({
       query: Orderwithprob,
-      variables : {filter: {solver: {eq: username} }},
+      variables: { filter: { solver: { eq: username } } },
       authMode: "AMAZON_COGNITO_USER_POOLS",
-    })
-    console.log("apiData", apiData)
+    });
+    console.log("apiData", apiData);
     // const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
     console.log("API로 받은 orders 전부", ordersFromAPI);
-    for(let i=0;i<answeredOrderId.length;i++) {
-      ordersFromAPI.filter(order => order.id !== answeredOrderId[i]);
+    for (let i = 0; i < answeredOrderId.length; i++) {
+      ordersFromAPI.filter((order) => order.id !== answeredOrderId[i]);
     }
     console.log("API로 받은 orders 중 answered 안된 것", ordersFromAPI);
     setOrders(ordersFromAPI);
@@ -282,10 +266,19 @@ const Solve = () => {
     }
     console.log("함수에서 받은 index", selectedOrderIndex);
     console.log(
-      "문제 id: ", orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
+      "문제 id: ",
+      orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
     );
 
+    let problem1 = Object.assign(
+      {},
+      orders[selectedOrderIndex].problems.items[selectedProblemIndex]
+    );
+<<<<<<< HEAD:src/Solve.js
+
     let problem1 = Object.assign({}, orders[selectedOrderIndex].problems.items[selectedProblemIndex])
+=======
+>>>>>>> 95884f96d2f9b30688afb8127e8b844cee42047b:src/pages/Solve.js
     if (problem1.image) {
       const image = await Storage.get(problem1.image);
       problem1.image_url = image;
@@ -312,9 +305,9 @@ const Solve = () => {
    */
   async function createAnswer() {
     for (var i = 0; i < solutionForm.length; i++) {
-      if(!solutionForm[i].description || solutionForm[i].image) {
-        alert(String(i)+"번째"+" 풀이를 채워주세요!")
-        return
+      if (!solutionForm[i].description || solutionForm[i].image) {
+        alert(String(i) + "번째" + " 풀이를 채워주세요!");
+        return;
       }
       if (solutionForm[i].image) {
         try {
@@ -325,7 +318,8 @@ const Solve = () => {
                 client: orders[selectedOrderIndex].username,
                 image: "sol_" + problems[i].image,
                 description: solutionForm[i].description,
-                answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
+                answerProblemId:
+                  orders[selectedOrderIndex].problems.items[i].id,
               },
             },
             authMode: "AMAZON_COGNITO_USER_POOLS",
@@ -354,19 +348,20 @@ const Solve = () => {
               input: {
                 client: orders[selectedOrderIndex].username,
                 description: solutionForm[i].description,
-                answerProblemId: orders[selectedOrderIndex].problems.items[i].id,
+                answerProblemId:
+                  orders[selectedOrderIndex].problems.items[i].id,
               },
             },
             authMode: "AMAZON_COGNITO_USER_POOLS",
           });
           console.log("create Answer successfully", i, "번째");
           console.log(data);
-        } catch(e) {
+        } catch (e) {
           console.log("graphql error occurred. error message : ", e);
         }
       }
     }
-    answeredOrderId.push(orders[selectedOrderIndex].id)
+    answeredOrderId.push(orders[selectedOrderIndex].id);
     // const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
     //   updateOrder(input: {id: $id, state: mentoring}) {
     //     updatedAt
@@ -397,7 +392,7 @@ const Solve = () => {
 
   if (!orders) return <div>There isn't problem.</div>;
   if (problems.length === 0) return <div>IMAGE LOADING...</div>;
-  return (
+  return authState === AuthState.SignedIn && user ? (
     <div className="Solve">
       <React.Fragment>
         <AppAppBar isLogin={authState} />
@@ -572,7 +567,9 @@ const Solve = () => {
                         >
                           <Grid item xs={5}>
                             {solutionForm[selectedProblemIndex] && (
-                              <div>{solutionForm[selectedProblemIndex].image.name}</div>
+                              <div>
+                                {solutionForm[selectedProblemIndex].image.name}
+                              </div>
                             )}
                             <input
                               id="contained-button-file"
@@ -609,7 +606,12 @@ const Solve = () => {
                           <Grid item xs={5}>
                             <div>
                               {solutionForm[selectedProblemIndex] && (
-                                <div>{solutionForm[selectedProblemIndex].description}</div>
+                                <div>
+                                  {
+                                    solutionForm[selectedProblemIndex]
+                                      .description
+                                  }
+                                </div>
                               )}
                               <input
                                 type="text"
@@ -708,8 +710,13 @@ const Solve = () => {
                   padding: "0em 2em",
                 }}
               >
-                <Chatting solver={user.username} client={orders[selectedOrderIndex].username} channelID={orders[selectedOrderIndex].id}/>
-                {user.username}, {orders[selectedOrderIndex].username}, {orders[selectedOrderIndex].id}
+                <Chatting
+                  solver={user.username}
+                  client={orders[selectedOrderIndex].username}
+                  channelID={orders[selectedOrderIndex].id}
+                />
+                {user.username}, {orders[selectedOrderIndex].username},{" "}
+                {orders[selectedOrderIndex].id}
               </Box>
             </React.Fragment>
             <React.Fragment>
@@ -735,7 +742,9 @@ const Solve = () => {
         <AppFooter />
       </React.Fragment>
     </div>
-  )
+  ) : (
+    <SignIn />
+  );
 };
 
 export default withRoot(withAuthenticator(Solve));
