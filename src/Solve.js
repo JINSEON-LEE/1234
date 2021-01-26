@@ -227,7 +227,7 @@ const Solve = () => {
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
   /**
    * solver name과 state:solving으로 Order를 불러오는 과정
-   * 마지막에 filter로 이미 푼 문제를 걸러 order list를 return한다. 
+   * 마지막에 filter로 이미 푼 문제를 걸러 order list를 return한다.
    */
   async function fetchOrders() {
     console.log("fetch assigned orders");
@@ -271,7 +271,7 @@ const Solve = () => {
 
   /**
    * orders list를 가지고 problems를 set하는 함수
-   * 기존 orders에서 description과 image 정보를 가져온 후, 
+   * 기존 orders에서 description과 image 정보를 가져온 후,
    * s3 버켓에서 사진 url을 꺼내 image_url에 저장한다.
    * @param {Object} orders 앞서 fetchOrders에서 받아온 orders or 전역변수 orders
    */
@@ -284,7 +284,7 @@ const Solve = () => {
     console.log(
       "문제 id: ", orders[selectedOrderIndex].problems.items[selectedProblemIndex].id
     );
-    
+
     let problem1 = Object.assign({}, orders[selectedOrderIndex].problems.items[selectedProblemIndex])
     if (problem1.image) {
       const image = await Storage.get(problem1.image);
@@ -330,7 +330,7 @@ const Solve = () => {
             },
             authMode: "AMAZON_COGNITO_USER_POOLS",
           });
-  
+
           try {
             const res = await Storage.put(
               "sol_" + problems[i].image,
@@ -340,7 +340,7 @@ const Solve = () => {
           } catch (e) {
             console.log("s3 error occurred. error message : ", e);
           }
-  
+
           console.log("create Answer successfully", i, "번째");
           console.log(data);
         } catch (e) {
