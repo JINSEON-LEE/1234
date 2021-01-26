@@ -1,6 +1,6 @@
 import "./Solve.css";
 import React, { useState, useEffect } from "react";
-import { API, Storage, Amplify, Auth, graphqlOperation } from "aws-amplify";
+import { API, Storage, Amplify, Auth } from "aws-amplify";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import { AuthState, onAuthUIStateChange } from "@aws-amplify/ui-components";
 import awsconfig from "../aws-exports";
@@ -23,7 +23,6 @@ import {
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-import ex2 from "../image/electro.png";
 import ArrowForwardIosOutlinedIcon from "@material-ui/icons/ArrowForwardIosOutlined";
 import withRoot from "../withRoot";
 
@@ -139,9 +138,6 @@ const Solve = () => {
   const [solutionForm, setSolutionForm] = useState([]);
   const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
-  const [answeredOrderId, setAnsweredOrderId] = useState([
-    "e38c6f1d-1dfa-47b7-8557-3c814f158250",
-  ]);
 
   const handleListItemClick = (event, index) => {
     let lastSelectedOrderIndex = selectedOrderIndex;
@@ -181,9 +177,8 @@ const Solve = () => {
   }, []);
 
   React.useLayoutEffect(() => {
-    console.log(answeredOrderId);
     fetchFirst();
-  }, [authState, answeredOrderId]);
+  }, [authState]);
 
   React.useLayoutEffect(() => {
     console.log(solutionForm);
@@ -245,10 +240,6 @@ const Solve = () => {
     // const apiData = await API.graphql(graphqlOperation(FetchAssignedOrders));
     const ordersFromAPI = apiData.data.listOrders.items;
     console.log("API로 받은 orders 전부", ordersFromAPI);
-    for (let i = 0; i < answeredOrderId.length; i++) {
-      ordersFromAPI.filter((order) => order.id !== answeredOrderId[i]);
-    }
-    console.log("API로 받은 orders 중 answered 안된 것", ordersFromAPI);
     setOrders(ordersFromAPI);
     return ordersFromAPI;
   }
@@ -274,8 +265,6 @@ const Solve = () => {
       {},
       orders[selectedOrderIndex].problems.items[selectedProblemIndex]
     );
-
-    
     if (problem1.image) {
       const image = await Storage.get(problem1.image);
       problem1.image_url = image;
@@ -297,8 +286,8 @@ const Solve = () => {
   }
 
   /**
-   * Answer 만들고, s3에 사진 저장, order의 state를 mentoring 상태로 만들기
-   * 추후에 mentoring만도 따로 불러와야 함
+   * Answer 만들고, s3에 사진 저장, order의 state를 mentoring 상태로 만들기위해
+   * create request 하기 
    */
   async function createAnswer() {
     for (var i = 0; i < solutionForm.length; i++) {
@@ -358,22 +347,8 @@ const Solve = () => {
         }
       }
     }
-    answeredOrderId.push(orders[selectedOrderIndex].id);
-    // const ChangeOrderState = `mutation ChangeOrderState($id: ID = "${orders[selectedOrderIndex].id}") {
-    //   updateOrder(input: {id: $id, state: mentoring}) {
-    //     updatedAt
-    //     state
-    //   }
-    // }`;
-    // try {
-    //   const res = await API.graphql({
-    //     query: ChangeOrderState,
-    //     authMode: "AMAZON_COGNITO_USER_POOLS",
-    //   })
-    //   console.log(res)
-    // } catch (e) {
-    //   console.log(e);
-    // }
+    console.log(orders[selectedOrderIndex], "에 대한 state 변경 요청 생성 중(solving=>mentoring)");
+
   }
 
   // enum State {
@@ -387,8 +362,23 @@ const Solve = () => {
   //   finished # 완료
   // }
 
-  if (!orders) return <div>There isn't problem.</div>;
-  if (problems.length === 0) return <div>IMAGE LOADING...</div>;
+  if (orders.length === 0)
+    return (
+      <React.Fragment>
+        <AppAppBar isLogin={authState} />
+        <h1>풀이요청 문제 없음</h1><br/><br/><br/><br/><br/>
+        <AppFooter />
+      </React.Fragment>
+    );
+  if (problems.length === 0) 
+    return (
+      <React.Fragment>
+        <AppAppBar isLogin={authState} />
+        <h1>이미지 로딩중...</h1><br/><br/><br/><br/><br/>
+        <AppFooter />
+      </React.Fragment>
+    );
+  
   return authState === AuthState.SignedIn && user ? (
     <div className="Solve">
       <React.Fragment>
