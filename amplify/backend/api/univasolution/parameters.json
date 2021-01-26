@@ -1,5 +1,5 @@
 {
-  "AppSyncApiName": "univafront",
+  "AppSyncApiName": "univasolution",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
   "DynamoDBEnableServerSideEncryption": false,
   "AuthCognitoUserPoolId": {

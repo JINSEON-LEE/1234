@@ -32,6 +32,28 @@ export const createOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -68,6 +90,28 @@ export const updateOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -104,6 +148,28 @@ export const deleteOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -174,25 +240,33 @@ export const createProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -209,25 +283,33 @@ export const updateProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -244,25 +326,33 @@ export const deleteProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -286,9 +376,32 @@ export const createAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -311,9 +424,32 @@ export const updateAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -336,9 +472,32 @@ export const deleteAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -442,45 +601,45 @@ export const deleteMessage = /* GraphQL */ `
     }
   }
 `;
-export const createStateChange = /* GraphQL */ `
-  mutation CreateStateChange(
-    $input: CreateStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const createChangerequest = /* GraphQL */ `
+  mutation CreateChangerequest(
+    $input: CreateChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    createStateChange(input: $input, condition: $condition) {
+    createChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const updateStateChange = /* GraphQL */ `
-  mutation UpdateStateChange(
-    $input: UpdateStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const updateChangerequest = /* GraphQL */ `
+  mutation UpdateChangerequest(
+    $input: UpdateChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    updateStateChange(input: $input, condition: $condition) {
+    updateChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const deleteStateChange = /* GraphQL */ `
-  mutation DeleteStateChange(
-    $input: DeleteStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const deleteChangerequest = /* GraphQL */ `
+  mutation DeleteChangerequest(
+    $input: DeleteChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    deleteStateChange(input: $input, condition: $condition) {
+    deleteChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner

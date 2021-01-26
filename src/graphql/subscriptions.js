@@ -89,6 +89,28 @@ export const onCreateOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -122,6 +144,28 @@ export const onUpdateOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -155,6 +199,28 @@ export const onDeleteOrder = /* GraphQL */ `
       updatedAt
       owner
       problems {
+        items {
+          id
+          index
+          subject
+          image
+          description
+          orderID
+          createdAt
+          updatedAt
+          owner
+          answers {
+            items {
+              id
+              image
+              description
+              client
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+        }
         nextToken
       }
     }
@@ -213,25 +279,33 @@ export const onCreateProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -245,25 +319,33 @@ export const onUpdateProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -277,25 +359,33 @@ export const onDeleteProblem = /* GraphQL */ `
       subject
       image
       description
+      orderID
       createdAt
       updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
       owner
       answers {
+        items {
+          id
+          image
+          description
+          client
+          createdAt
+          updatedAt
+          problem {
+            id
+            index
+            subject
+            image
+            description
+            orderID
+            createdAt
+            updatedAt
+            owner
+            answers {
+              nextToken
+            }
+          }
+        }
         nextToken
       }
     }
@@ -316,9 +406,32 @@ export const onCreateAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -338,9 +451,32 @@ export const onUpdateAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -360,9 +496,32 @@ export const onDeleteAnswer = /* GraphQL */ `
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
+        answers {
+          items {
+            id
+            image
+            description
+            client
+            createdAt
+            updatedAt
+            problem {
+              id
+              index
+              subject
+              image
+              description
+              orderID
+              createdAt
+              updatedAt
+              owner
+            }
+          }
+          nextToken
+        }
       }
     }
   }
@@ -403,36 +562,36 @@ export const onDeleteSolver = /* GraphQL */ `
     }
   }
 `;
-export const onCreateStateChange = /* GraphQL */ `
-  subscription OnCreateStateChange($owner: String) {
-    onCreateStateChange(owner: $owner) {
+export const onCreateChangerequest = /* GraphQL */ `
+  subscription OnCreateChangerequest($owner: String) {
+    onCreateChangerequest(owner: $owner) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const onUpdateStateChange = /* GraphQL */ `
-  subscription OnUpdateStateChange($owner: String) {
-    onUpdateStateChange(owner: $owner) {
+export const onUpdateChangerequest = /* GraphQL */ `
+  subscription OnUpdateChangerequest($owner: String) {
+    onUpdateChangerequest(owner: $owner) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const onDeleteStateChange = /* GraphQL */ `
-  subscription OnDeleteStateChange($owner: String) {
-    onDeleteStateChange(owner: $owner) {
+export const onDeleteChangerequest = /* GraphQL */ `
+  subscription OnDeleteChangerequest($owner: String) {
+    onDeleteChangerequest(owner: $owner) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
