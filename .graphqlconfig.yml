@@ -1,6 +1,6 @@
 projects:
-  univagraphql:
-    schemaPath: amplify/backend/api/univagraphql/build/schema.graphql
+  univafront:
+    schemaPath: amplify/backend/api/univafront/build/schema.graphql
     includes:
       - src/graphql/**/*.js
     excludes:
@@ -13,6 +13,3 @@ projects:
         region: ap-northeast-2
         apiId: null
         maxDepth: 2
-extensions:
-  amplify:
-    version: 3

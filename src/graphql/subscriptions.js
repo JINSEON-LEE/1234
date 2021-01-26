@@ -16,6 +16,264 @@ export const onCreateMessageByChannelId = /* GraphQL */ `
     }
   }
 `;
+export const onCreateOrder = /* GraphQL */ `
+  subscription OnCreateOrder($owner: String) {
+    onCreateOrder(owner: $owner) {
+      id
+      username
+      subject
+      option1
+      option2
+      option3
+      deadline
+      state
+      pay
+      problems {
+        nextToken
+      }
+      message {
+        id
+        channelID
+        client
+        solver
+        author
+        body
+        createdAt
+        updatedAt
+        owner
+      }
+      createdAt
+      solver
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateOrder = /* GraphQL */ `
+  subscription OnUpdateOrder($owner: String) {
+    onUpdateOrder(owner: $owner) {
+      id
+      username
+      subject
+      option1
+      option2
+      option3
+      deadline
+      state
+      pay
+      problems {
+        nextToken
+      }
+      message {
+        id
+        channelID
+        client
+        solver
+        author
+        body
+        createdAt
+        updatedAt
+        owner
+      }
+      createdAt
+      solver
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteOrder = /* GraphQL */ `
+  subscription OnDeleteOrder($owner: String) {
+    onDeleteOrder(owner: $owner) {
+      id
+      username
+      subject
+      option1
+      option2
+      option3
+      deadline
+      state
+      pay
+      problems {
+        nextToken
+      }
+      message {
+        id
+        channelID
+        client
+        solver
+        author
+        body
+        createdAt
+        updatedAt
+        owner
+      }
+      createdAt
+      solver
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onCreateProblem = /* GraphQL */ `
+  subscription OnCreateProblem($owner: String) {
+    onCreateProblem(owner: $owner) {
+      id
+      index
+      subject
+      image
+      description
+      orderID
+      answers {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onUpdateProblem = /* GraphQL */ `
+  subscription OnUpdateProblem($owner: String) {
+    onUpdateProblem(owner: $owner) {
+      id
+      index
+      subject
+      image
+      description
+      orderID
+      answers {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onDeleteProblem = /* GraphQL */ `
+  subscription OnDeleteProblem($owner: String) {
+    onDeleteProblem(owner: $owner) {
+      id
+      index
+      subject
+      image
+      description
+      orderID
+      answers {
+        nextToken
+      }
+      createdAt
+      updatedAt
+      owner
+    }
+  }
+`;
+export const onCreateAnswer = /* GraphQL */ `
+  subscription OnCreateAnswer($client: String) {
+    onCreateAnswer(client: $client) {
+      id
+      image
+      description
+      problem {
+        id
+        index
+        subject
+        image
+        description
+        orderID
+        createdAt
+        updatedAt
+        owner
+      }
+      client
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateAnswer = /* GraphQL */ `
+  subscription OnUpdateAnswer($client: String) {
+    onUpdateAnswer(client: $client) {
+      id
+      image
+      description
+      problem {
+        id
+        index
+        subject
+        image
+        description
+        orderID
+        createdAt
+        updatedAt
+        owner
+      }
+      client
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteAnswer = /* GraphQL */ `
+  subscription OnDeleteAnswer($client: String) {
+    onDeleteAnswer(client: $client) {
+      id
+      image
+      description
+      problem {
+        id
+        index
+        subject
+        image
+        description
+        orderID
+        createdAt
+        updatedAt
+        owner
+      }
+      client
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateSolver = /* GraphQL */ `
+  subscription OnCreateSolver($solver: String) {
+    onCreateSolver(solver: $solver) {
+      id
+      solver
+      state
+      orders
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateSolver = /* GraphQL */ `
+  subscription OnUpdateSolver($solver: String) {
+    onUpdateSolver(solver: $solver) {
+      id
+      solver
+      state
+      orders
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteSolver = /* GraphQL */ `
+  subscription OnDeleteSolver($solver: String) {
+    onDeleteSolver(solver: $solver) {
+      id
+      solver
+      state
+      orders
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const onCreateMessage = /* GraphQL */ `
   subscription OnCreateMessage {
     onCreateMessage {
@@ -61,102 +319,39 @@ export const onDeleteMessage = /* GraphQL */ `
     }
   }
 `;
-export const onCreateOrder = /* GraphQL */ `
-  subscription OnCreateOrder($owner: String) {
-    onCreateOrder(owner: $owner) {
+export const onCreateChangerequest = /* GraphQL */ `
+  subscription OnCreateChangerequest($owner: String) {
+    onCreateChangerequest(owner: $owner) {
       id
-      username
-      subject
-      option1
-      option2
-      option3
-      deadline
-      state
-      pay
-      message {
-        id
-        channelID
-        client
-        solver
-        author
-        body
-        createdAt
-        updatedAt
-        owner
-      }
+      orderId
+      requestedState
       createdAt
-      solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
-export const onUpdateOrder = /* GraphQL */ `
-  subscription OnUpdateOrder($owner: String) {
-    onUpdateOrder(owner: $owner) {
+export const onUpdateChangerequest = /* GraphQL */ `
+  subscription OnUpdateChangerequest($owner: String) {
+    onUpdateChangerequest(owner: $owner) {
       id
-      username
-      subject
-      option1
-      option2
-      option3
-      deadline
-      state
-      pay
-      message {
-        id
-        channelID
-        client
-        solver
-        author
-        body
-        createdAt
-        updatedAt
-        owner
-      }
+      orderId
+      requestedState
       createdAt
-      solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
-export const onDeleteOrder = /* GraphQL */ `
-  subscription OnDeleteOrder($owner: String) {
-    onDeleteOrder(owner: $owner) {
+export const onDeleteChangerequest = /* GraphQL */ `
+  subscription OnDeleteChangerequest($owner: String) {
+    onDeleteChangerequest(owner: $owner) {
       id
-      username
-      subject
-      option1
-      option2
-      option3
-      deadline
-      state
-      pay
-      message {
-        id
-        channelID
-        client
-        solver
-        author
-        body
-        createdAt
-        updatedAt
-        owner
-      }
+      orderId
+      requestedState
       createdAt
-      solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
@@ -199,240 +394,6 @@ export const onDeleteReview = /* GraphQL */ `
       rating
       review
       order
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
-export const onCreateProblem = /* GraphQL */ `
-  subscription OnCreateProblem($owner: String) {
-    onCreateProblem(owner: $owner) {
-      id
-      index
-      subject
-      image
-      description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
-      answers {
-        nextToken
-      }
-    }
-  }
-`;
-export const onUpdateProblem = /* GraphQL */ `
-  subscription OnUpdateProblem($owner: String) {
-    onUpdateProblem(owner: $owner) {
-      id
-      index
-      subject
-      image
-      description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
-      answers {
-        nextToken
-      }
-    }
-  }
-`;
-export const onDeleteProblem = /* GraphQL */ `
-  subscription OnDeleteProblem($owner: String) {
-    onDeleteProblem(owner: $owner) {
-      id
-      index
-      subject
-      image
-      description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
-      answers {
-        nextToken
-      }
-    }
-  }
-`;
-export const onCreateAnswer = /* GraphQL */ `
-  subscription OnCreateAnswer($client: String) {
-    onCreateAnswer(client: $client) {
-      id
-      image
-      description
-      client
-      createdAt
-      updatedAt
-      problem {
-        id
-        index
-        subject
-        image
-        description
-        createdAt
-        updatedAt
-        owner
-      }
-    }
-  }
-`;
-export const onUpdateAnswer = /* GraphQL */ `
-  subscription OnUpdateAnswer($client: String) {
-    onUpdateAnswer(client: $client) {
-      id
-      image
-      description
-      client
-      createdAt
-      updatedAt
-      problem {
-        id
-        index
-        subject
-        image
-        description
-        createdAt
-        updatedAt
-        owner
-      }
-    }
-  }
-`;
-export const onDeleteAnswer = /* GraphQL */ `
-  subscription OnDeleteAnswer($client: String) {
-    onDeleteAnswer(client: $client) {
-      id
-      image
-      description
-      client
-      createdAt
-      updatedAt
-      problem {
-        id
-        index
-        subject
-        image
-        description
-        createdAt
-        updatedAt
-        owner
-      }
-    }
-  }
-`;
-export const onCreateSolver = /* GraphQL */ `
-  subscription OnCreateSolver($solver: String) {
-    onCreateSolver(solver: $solver) {
-      id
-      solver
-      state
-      orders
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateSolver = /* GraphQL */ `
-  subscription OnUpdateSolver($solver: String) {
-    onUpdateSolver(solver: $solver) {
-      id
-      solver
-      state
-      orders
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteSolver = /* GraphQL */ `
-  subscription OnDeleteSolver($solver: String) {
-    onDeleteSolver(solver: $solver) {
-      id
-      solver
-      state
-      orders
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onCreateStateChange = /* GraphQL */ `
-  subscription OnCreateStateChange($owner: String) {
-    onCreateStateChange(owner: $owner) {
-      id
-      orderId
-      wishState
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
-export const onUpdateStateChange = /* GraphQL */ `
-  subscription OnUpdateStateChange($owner: String) {
-    onUpdateStateChange(owner: $owner) {
-      id
-      orderId
-      wishState
-      createdAt
-      updatedAt
-      owner
-    }
-  }
-`;
-export const onDeleteStateChange = /* GraphQL */ `
-  subscription OnDeleteStateChange($owner: String) {
-    onDeleteStateChange(owner: $owner) {
-      id
-      orderId
-      wishState
       createdAt
       updatedAt
       owner

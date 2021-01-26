@@ -16,6 +16,9 @@ export const createOrder = /* GraphQL */ `
       deadline
       state
       pay
+      problems {
+        nextToken
+      }
       message {
         id
         channelID
@@ -31,9 +34,6 @@ export const createOrder = /* GraphQL */ `
       solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
@@ -52,6 +52,9 @@ export const updateOrder = /* GraphQL */ `
       deadline
       state
       pay
+      problems {
+        nextToken
+      }
       message {
         id
         channelID
@@ -67,9 +70,6 @@ export const updateOrder = /* GraphQL */ `
       solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
@@ -88,6 +88,9 @@ export const deleteOrder = /* GraphQL */ `
       deadline
       state
       pay
+      problems {
+        nextToken
+      }
       message {
         id
         channelID
@@ -103,9 +106,6 @@ export const deleteOrder = /* GraphQL */ `
       solver
       updatedAt
       owner
-      problems {
-        nextToken
-      }
     }
   }
 `;
@@ -174,27 +174,13 @@ export const createProblem = /* GraphQL */ `
       subject
       image
       description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
+      orderID
       answers {
         nextToken
       }
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
@@ -209,27 +195,13 @@ export const updateProblem = /* GraphQL */ `
       subject
       image
       description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
+      orderID
       answers {
         nextToken
       }
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
@@ -244,27 +216,13 @@ export const deleteProblem = /* GraphQL */ `
       subject
       image
       description
-      createdAt
-      updatedAt
-      order {
-        id
-        username
-        subject
-        option1
-        option2
-        option3
-        deadline
-        state
-        pay
-        createdAt
-        solver
-        updatedAt
-        owner
-      }
-      owner
+      orderID
       answers {
         nextToken
       }
+      createdAt
+      updatedAt
+      owner
     }
   }
 `;
@@ -277,19 +235,20 @@ export const createAnswer = /* GraphQL */ `
       id
       image
       description
-      client
-      createdAt
-      updatedAt
       problem {
         id
         index
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
       }
+      client
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -302,19 +261,20 @@ export const updateAnswer = /* GraphQL */ `
       id
       image
       description
-      client
-      createdAt
-      updatedAt
       problem {
         id
         index
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
       }
+      client
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -327,19 +287,20 @@ export const deleteAnswer = /* GraphQL */ `
       id
       image
       description
-      client
-      createdAt
-      updatedAt
       problem {
         id
         index
         subject
         image
         description
+        orderID
         createdAt
         updatedAt
         owner
       }
+      client
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -442,45 +403,45 @@ export const deleteMessage = /* GraphQL */ `
     }
   }
 `;
-export const createStateChange = /* GraphQL */ `
-  mutation CreateStateChange(
-    $input: CreateStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const createChangerequest = /* GraphQL */ `
+  mutation CreateChangerequest(
+    $input: CreateChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    createStateChange(input: $input, condition: $condition) {
+    createChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const updateStateChange = /* GraphQL */ `
-  mutation UpdateStateChange(
-    $input: UpdateStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const updateChangerequest = /* GraphQL */ `
+  mutation UpdateChangerequest(
+    $input: UpdateChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    updateStateChange(input: $input, condition: $condition) {
+    updateChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
     }
   }
 `;
-export const deleteStateChange = /* GraphQL */ `
-  mutation DeleteStateChange(
-    $input: DeleteStateChangeInput!
-    $condition: ModelStateChangeConditionInput
+export const deleteChangerequest = /* GraphQL */ `
+  mutation DeleteChangerequest(
+    $input: DeleteChangerequestInput!
+    $condition: ModelChangerequestConditionInput
   ) {
-    deleteStateChange(input: $input, condition: $condition) {
+    deleteChangerequest(input: $input, condition: $condition) {
       id
       orderId
-      wishState
+      requestedState
       createdAt
       updatedAt
       owner
