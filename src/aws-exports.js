@@ -10,10 +10,10 @@ const awsmobile = {
     "oauth": {},
     "aws_user_files_s3_bucket": "univa-frontddea0ec3db934773902f35abcf4195d2testtwo-testtwo",
     "aws_user_files_s3_bucket_region": "ap-northeast-2",
-    "aws_appsync_graphqlEndpoint": "https://wofi4qewjvavnlocbl2atd2ou4.appsync-api.ap-northeast-2.amazonaws.com/graphql",
+    "aws_appsync_graphqlEndpoint": "https://rynoov6txvfg5nbop3pssu3uum.appsync-api.ap-northeast-2.amazonaws.com/graphql",
     "aws_appsync_region": "ap-northeast-2",
     "aws_appsync_authenticationType": "API_KEY",
-    "aws_appsync_apiKey": "da2-c2lpcbc3vnbfvhva72nwzpz63i"
+    "aws_appsync_apiKey": "da2-zixvphfn4nbjhkp4j3wsheaxui"
 };
 
 
