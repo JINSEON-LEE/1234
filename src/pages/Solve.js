@@ -138,6 +138,7 @@ const Solve = () => {
   const [solutionForm, setSolutionForm] = useState([]);
   const [viewRefSol, setViewRefSol] = useState(false);
   const [viewSol, setViewSol] = useState(false);
+  const [request, setRequest] = useState([])
 
   const handleListItemClick = (event, index) => {
     let lastSelectedOrderIndex = selectedOrderIndex;
@@ -201,6 +202,11 @@ const Solve = () => {
     await getProblem(ordersFromAPI).catch((error) => {
       console.log(error);
     });
+    if(solutionForm.length === 0) {
+      for (let i = 0; i < ordersFromAPI[selectedOrderIndex].problems.items.length; i++) {
+        solutionForm.push(initialSolutionForm);
+      }
+    }
   }
 
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
@@ -252,9 +258,6 @@ const Solve = () => {
    */
   async function getProblem(orders) {
     if (problems[selectedProblemIndex]) return;
-    if (!solutionForm[selectedProblemIndex]) {
-      solutionForm.push(initialSolutionForm);
-    }
     console.log("함수에서 받은 index", selectedOrderIndex);
     console.log(
       "문제 id: ",
@@ -290,22 +293,24 @@ const Solve = () => {
    * create request 하기 
    */
   async function createAnswer() {
-    for (var i = 0; i < solutionForm.length; i++) {
-      if (!solutionForm[i].description || solutionForm[i].image) {
+    for (let i = 0; i < orders[selectedOrderIndex].problems.items.length; i++) {
+      if (!solutionForm[i].description || !solutionForm[i].image) {
         alert(String(i) + "번째" + " 풀이를 채워주세요!");
         return;
       }
-      if (solutionForm[i].image) {
+    }
+    for (let j = 0; j < orders[selectedOrderIndex].problems.items.length; j++) {
+      if (solutionForm[j].image) {
         try {
           const data = await API.graphql({
             query: createAnswerMutation,
             variables: {
               input: {
                 client: orders[selectedOrderIndex].username,
-                image: "sol_" + problems[i].image,
-                description: solutionForm[i].description,
+                image: "sol_" + problems[j].image,
+                description: solutionForm[j].description,
                 answerProblemId:
-                  orders[selectedOrderIndex].problems.items[i].id,
+                  orders[selectedOrderIndex].problems.items[j].id,
               },
             },
             authMode: "AMAZON_COGNITO_USER_POOLS",
@@ -313,15 +318,15 @@ const Solve = () => {
 
           try {
             const res = await Storage.put(
-              "sol_" + problems[i].image,
-              solutionForm[i].image
+              "sol_" + problems[j].image,
+              solutionForm[j].image
             ); //S3 버킷에 파일 저장
             console.log(res);
           } catch (e) {
             console.log("s3 error occurred. error message : ", e);
           }
 
-          console.log("create Answer successfully", i, "번째");
+          console.log("create Answer successfully", j, "번째");
           console.log(data);
         } catch (e) {
           console.log("graphql error occurred. error message : ", e);
@@ -333,14 +338,14 @@ const Solve = () => {
             variables: {
               input: {
                 client: orders[selectedOrderIndex].username,
-                description: solutionForm[i].description,
+                description: solutionForm[j].description,
                 answerProblemId:
-                  orders[selectedOrderIndex].problems.items[i].id,
+                  orders[selectedOrderIndex].problems.items[j].id,
               },
             },
             authMode: "AMAZON_COGNITO_USER_POOLS",
           });
-          console.log("create Answer successfully", i, "번째");
+          console.log("create Answer successfully", j, "번째");
           console.log(data);
         } catch (e) {
           console.log("graphql error occurred. error message : ", e);
@@ -348,7 +353,7 @@ const Solve = () => {
       }
     }
     
-    const RequestMutation = `mutation MyMutation($requestedState: State = mentoring, $orderId: String = "${orders[selectedOrderIndex]}") {
+    const RequestMutation = `mutation MyMutation($requestedState: State = mentoring, $orderId: String = "${orders[selectedOrderIndex].id}") {
       createChangerequest(input: {orderId: $orderId, requestedState: $requestedState}) {
         requestedState
         orderId
@@ -367,6 +372,7 @@ const Solve = () => {
       console.log("graphql error occurred. error message : ", e);
     }
 
+    request.push(orders[selectedOrderIndex].id)
   }
 
   // enum State {
@@ -720,8 +726,9 @@ const Solve = () => {
                   client={orders[selectedOrderIndex].username}
                   channelID={orders[selectedOrderIndex].id}
                 />
-                {user.username}, {orders[selectedOrderIndex].username},{" "}
-                {orders[selectedOrderIndex].id}
+                <div>username: {user.username}</div>
+                <div>client: {orders[selectedOrderIndex].username},{" "}</div>
+                <div>orderId: {orders[selectedOrderIndex].id}</div>
               </Box>
             </React.Fragment>
             <React.Fragment>
