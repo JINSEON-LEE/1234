@@ -202,11 +202,16 @@ const Solve = () => {
     await getProblem(ordersFromAPI).catch((error) => {
       console.log(error);
     });
-    if(solutionForm.length === 0) {
-      for (let i = 0; i < ordersFromAPI[selectedOrderIndex].problems.items.length; i++) {
-        solutionForm.push(initialSolutionForm);
+    try {
+      if(solutionForm.length === 0) {
+        for (let i = 0; i < ordersFromAPI[selectedOrderIndex].problems.items.length; i++) {
+          solutionForm.push(initialSolutionForm);
+        }
       }
+    } catch(e) {
+      console.log(e)
     }
+
   }
 
   // 34895469-cf78-48fd-b353-ace169b02276 // let calculus mentor
