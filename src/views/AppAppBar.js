@@ -81,41 +81,41 @@ function AppAppBar(props) {
     <div>
       <AppBar position="fixed">
         <Toolbar className={classes.toolbar}>
-          <Link href="/">
+          <a href="/">
             <img height='60' src={logo}/>
-          </Link>
-          <Link
+          </a>
+          <a
             variant="h4"
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/solve"
+            href="/solve/"
           >
             {'문제풀이'}
-          </Link>
-          <Link
+          </a>
+          <a
             variant="h4"
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/mentoring"
+            href="/mentoring/"
           >
             {'멘토링'}
-          </Link>
-          <Link
+          </a>
+          <a
             variant="h4"
             underline="none"
             color="inherit"
             className={classes.tool}
-            href="/chatwithadmin"
+            href="/chatwithadmin/"
           >
             {'관리자와의 채팅'}
-          </Link>
+          </a>
           <div className={classes.right}>
             {console.log(props.isLogin)}
             {props.isLogin === "signedin"
               ? (
-                <Link
+                <a
                 color="inherit"
                 variant="h6"
                 underline="none"
@@ -123,11 +123,11 @@ function AppAppBar(props) {
                 href="/sign-out/"
                 >
                   {'로그아웃'}
-                </Link>
+                </a>
               )
               : (
                 <div>
-                <Link
+                <a
                   color="inherit"
                   variant="h6"
                   underline="none"
@@ -136,8 +136,8 @@ function AppAppBar(props) {
                   path = {location.pathname}
                 >
                   {'로그인'}
-                </Link>
-                <Link
+                </a>
+                <a
                   color="inherit"
                   variant="h6"
                   underline="none"
@@ -145,7 +145,7 @@ function AppAppBar(props) {
                   href="/sign-up/"
                 >
                   {'회원가입'}
-                </Link>
+                </a>
                 </div>
               )
             }
@@ -161,7 +161,7 @@ function AppAppBar(props) {
         <MenuItem onClick={handleDrawerToggle}>
           <List>
           
-            <ListItem button onClißßck = {() => {history.push('/solve');}}>
+            <ListItem button onClick = {() => {history.push('/solve');}}>
               <ListItemText primary='문제풀이'/>
             </ListItem>
 
